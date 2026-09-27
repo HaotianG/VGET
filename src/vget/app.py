@@ -17,7 +17,7 @@ def _payload():
 
 
 def create_app(data_dir=None,testing=False):
-    root=Path(data_dir or os.environ.get('VGET_DATA_DIR',Path(__file__).resolve().parents[1]/'.vget'))
+    root=Path(data_dir or os.environ.get('VGET_DATA_DIR',Path.cwd()/'.vget'))
     app=Flask(__name__,static_folder='static',static_url_path='/static')
     app.config.update(TESTING=testing,DATA_DIR=str(root.resolve()),MAX_CONTENT_LENGTH=12*1024*1024)
     store=Store(root);service=Service(store)

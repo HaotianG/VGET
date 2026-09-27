@@ -1,6 +1,6 @@
 #!/bin/zsh
 set -eu
-cd -- "$(dirname -- "$0")"
+cd -- "$(dirname -- "$0")/.."
 VGET_WORKSPACE="${VGET_DATA_DIR:-.vget}"
 if [[ ! -f "$VGET_WORKSPACE/state.json" ]]; then
   ./vget-cli --workspace "$VGET_WORKSPACE" init >/dev/null

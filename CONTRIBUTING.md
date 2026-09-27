@@ -13,3 +13,24 @@ Preserve original inputs, source attribution and exact provenance. Imported text
 The source package version follows semantic versioning for releases. Mark prototypes/prereleases clearly; a tag does not establish scientific validation. Keep changes reviewable and avoid unrelated refactors. Add a changelog entry for user-visible changes. No package registry publishing or automatic deployment runs in this repository.
 
 Acceptance must distinguish artifact integrity, computable constraints, source claims, functional evidence and experimental confirmation. Unknown or unsupported outcomes must stay explicit. All nine host targets remain on the roadmap; each supported context needs its own reviewed evidence and fixtures.
+
+## Development setup
+
+Use Python 3.11 or 3.14 on macOS or Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[test]' wheel
+python -m pytest tests -q
+python scripts/check_repository.py
+python scripts/check_public_tree.py
+python -m pip wheel --no-deps . --wheel-dir dist
+```
+
+The package lives in `src/vget/`; tests exercise the installed package.
+Keep public contracts in `schemas/`, runnable examples in `examples/`,
+and explanations in `docs/`. See [repository practices](docs/REPOSITORY_PRACTICES.md).
+`pyproject.toml` is the dependency authority; `requirements/test.txt` is a convenience wrapper.
+The development snapshot is historical evidence, not a portable lockfile.
+Repository checks inspect tracked files, so stage new documentation before running them.

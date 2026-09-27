@@ -6,4 +6,4 @@ if [ -x "$VGET_ROOT/.venv/bin/python" ]; then
 else
   VGET_PYTHON=${VGET_PYTHON:-python3}
 fi
-PYTHONPATH="$VGET_ROOT${PYTHONPATH:+:$PYTHONPATH}" exec "$VGET_PYTHON" -m vget "$@"
+exec "$VGET_PYTHON" -m vget "$@"

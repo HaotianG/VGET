@@ -1,0 +1,4 @@
+* text=auto eol=lf
+# Keep original public-source bytes exact, including newline conventions.
+src/vget/data/registry/** -text
+*.gbk -text
