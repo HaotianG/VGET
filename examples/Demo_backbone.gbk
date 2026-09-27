@@ -1,0 +1,24 @@
+LOCUS       Demo_backbone            480 bp    DNA     linear   UNK 21-SEP-2026
+DEFINITION  Synthetic software fixture; no biological function asserted..
+ACCESSION   Demo_backbone
+VERSION     Demo_backbone
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+COMMENT     DEMONSTRATION ONLY. Arbitrary bases for software testing, not a
+            laboratory construct.
+FEATURES             Location/Qualifiers
+     misc_feature    1..480
+                     /label="Demo_backbone"
+                     /note="Synthetic software fixture; uncharacterized."
+ORIGIN
+        1 gcaagtagac cagcggaaag ttaacccata gccaatcaag ctccgacctg ctgtcgcgtg
+       61 gcgcggcccc ctcgttgtgc gatattgtga tgtaaaatac ttgatctgac gtatacatgc
+      121 ttcagtttat tggtctacgt ttgatatagc aagacgctat aaacaatgtg tgttacataa
+      181 aagggcttac tctacatcga ccggtaggac actgccgtgg cctcttcacg tctgaaagtg
+      241 tcctgcagca agtcttacga aactttaaat cgtgggggcc gatccgcaac aacgaggacc
+      301 actgttgcca cacctacaaa tgtagagaga caagctcaac ccaagaaaag acctacgcga
+      361 agagcctggc gtcattctaa caatgaatgg gtaaagtaca gctttgaaca ggactgatgc
+      421 gaactatcgt cccggtacaa gcataaagag cgaacaccat ggtcctggat tggagtcgtg
+//

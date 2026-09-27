@@ -1,0 +1,25 @@
+LOCUS       BBa_K592009              669 bp    DNA     linear   SYN 08-SEP-2021
+DEFINITION  amilCP, blue chromoprotein.
+ACCESSION   BBa_K592009
+VERSION     BBa_K592009
+KEYWORDS    .
+FEATURES             Location/Qualifiers
+     source          1..669
+                     /mol_type="genomic DNA"
+     CDS             1..669
+                     /label="CDS"
+                     /note="SO:0000316 CDS"
+ORIGIN
+        1 atgagtgtga tcgctaaaca aatgacctac aaggtttata tgtcaggcac ggtcaatgga
+       61 cactactttg aggtcgaagg cgatggaaaa ggtaagccct acgaggggga gcagacggta
+      121 aagctcactg tcaccaaggg cggacctctg ccatttgctt gggatatttt atcaccacag
+      181 tgtcagtacg gaagcatacc attcaccaag taccctgaag acatccctga ctatgtaaag
+      241 cagtcattcc cggagggcta tacatgggag aggatcatga actttgaaga tggtgcagtg
+      301 tgtactgtca gcaatgattc cagcatccaa ggcaactgtt tcatctacca tgtcaagttc
+      361 tctggtttga actttcctcc caatggacct gtcatgcaga agaagacaca gggctgggaa
+      421 cccaacactg agcgtctctt tgcacgagat ggaatgctgc taggaaacaa ctttatggct
+      481 ctgaagttag aaggaggcgg tcactatttg tgtgaattta aaactactta caaggcaaag
+      541 aagcctgtga agatgccagg gtatcactat gttgaccgca aactggatgt aaccaatcac
+      601 aacaaggatt acacttcggt tgagcagtgt gaaatttcca ttgcacgcaa acctgtggtc
+      661 gcctaataa
+//

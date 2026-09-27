@@ -1,0 +1,28 @@
+LOCUS       BBa_E1010                706 bp    DNA     linear   SYN 08-SEP-2021
+DEFINITION   **highly** engineered mutant of red fluorescent protein from Discosoma striata (coral).
+ACCESSION   BBa_E1010
+VERSION     BBa_E1010
+KEYWORDS    .
+FEATURES             Location/Qualifiers
+     source          1..706
+                     /mol_type="genomic DNA"
+     CDS             1..706
+                     /label="CDS"
+                     /note="SO:0000316 CDS"
+     CDS             2..676
+                     /label="mrfp1"
+                     /note="SO:0000316 CDS"
+ORIGIN
+        1 atggcttcct ccgaagacgt tatcaaagag ttcatgcgtt tcaaagttcg tatggaaggt
+       61 tccgttaacg gtcacgagtt cgaaatcgaa ggtgaaggtg aaggtcgtcc gtacgaaggt
+      121 acccagaccg ctaaactgaa agttaccaaa ggtggtccgc tgccgttcgc ttgggacatc
+      181 ctgtccccgc agttccagta cggttccaaa gcttacgtta aacacccggc tgacatcccg
+      241 gactacctga aactgtcctt cccggaaggt ttcaaatggg aacgtgttat gaacttcgaa
+      301 gacggtggtg ttgttaccgt tacccaggac tcctccctgc aagacggtga gttcatctac
+      361 aaagttaaac tgcgtggtac caacttcccg tccgacggtc cggttatgca gaaaaaaacc
+      421 atgggttggg aagcttccac cgaacgtatg tacccggaag acggtgctct gaaaggtgaa
+      481 atcaaaatgc gtctgaaact gaaagacggt ggtcactacg acgctgaagt taaaaccacc
+      541 tacatggcta aaaaaccggt tcagctgccg ggtgcttaca aaaccgacat caaactggac
+      601 atcacctccc acaacgaaga ctacaccatc gttgaacagt acgaacgtgc tgaaggtcgt
+      661 cactccaccg gtgcttaata acgctgatag tgctagtgta gatcgc
+//

@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+VGET_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+if [ -x "$VGET_ROOT/.venv/bin/python" ]; then
+  VGET_PYTHON="$VGET_ROOT/.venv/bin/python"
+else
+  VGET_PYTHON=${VGET_PYTHON:-python3}
+fi
+PYTHONPATH="$VGET_ROOT${PYTHONPATH:+:$PYTHONPATH}" exec "$VGET_PYTHON" -m vget "$@"

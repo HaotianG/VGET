@@ -1,0 +1,33 @@
+LOCUS       Demo_parent              640 bp    DNA     circular UNK 21-SEP-2026
+DEFINITION  Synthetic software fixture; no biological function asserted..
+ACCESSION   Demo_parent
+VERSION     Demo_parent
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+COMMENT     DEMONSTRATION ONLY. Arbitrary bases for software testing, not a
+            laboratory construct.
+FEATURES             Location/Qualifiers
+     misc_feature    1..240
+                     /label="Left_context"
+                     /note="Synthetic software fixture; uncharacterized."
+     misc_feature    241..400
+                     /label="Demo_insert"
+                     /note="Synthetic software fixture; uncharacterized."
+     misc_feature    complement(401..640)
+                     /label="Right_context"
+                     /note="Synthetic software fixture; uncharacterized."
+ORIGIN
+        1 gcaagtagac cagcggaaag ttaacccata gccaatcaag ctccgacctg ctgtcgcgtg
+       61 gcgcggcccc ctcgttgtgc gatattgtga tgtaaaatac ttgatctgac gtatacatgc
+      121 ttcagtttat tggtctacgt ttgatatagc aagacgctat aaacaatgtg tgttacataa
+      181 aagggcttac tctacatcga ccggtaggac actgccgtgg cctcttcacg tctgaaagtg
+      241 caatcactag tctatgcgat gtcgtcggtt tgaaatcgcc ttcacggttt cgatgttcgg
+      301 gcccaacggg catctcatca tttccgtaat gagcctttgg tagcctaagc cggttcgagc
+      361 gtgcgggtct tctgactaga taggatggga agtcagaatc tcctgcagca agtcttacga
+      421 aactttaaat cgtgggggcc gatccgcaac aacgaggacc actgttgcca cacctacaaa
+      481 tgtagagaga caagctcaac ccaagaaaag acctacgcga agagcctggc gtcattctaa
+      541 caatgaatgg gtaaagtaca gctttgaaca ggactgatgc gaactatcgt cccggtacaa
+      601 gcataaagag cgaacaccat ggtcctggat tggagtcgtg
+//

@@ -1,0 +1,4 @@
+Name prefix: Demo_
+Max length: 10000
+Allowed hosts: E. coli, CHO
+Assembly family: sequence_composition

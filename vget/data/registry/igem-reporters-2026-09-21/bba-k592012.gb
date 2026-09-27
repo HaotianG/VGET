@@ -1,0 +1,25 @@
+LOCUS       BBa_K592012              681 bp    DNA     linear   SYN 08-SEP-2021
+DEFINITION  eforRed, red chromoprotein.
+ACCESSION   BBa_K592012
+VERSION     BBa_K592012
+KEYWORDS    .
+FEATURES             Location/Qualifiers
+     source          1..681
+                     /mol_type="genomic DNA"
+     CDS             1..681
+                     /label="CDS"
+                     /note="SO:0000316 CDS"
+ORIGIN
+        1 atgtcagtga ttaagcaggt aatgaagacc aagttgcacc ttgagggcac tgtcaatggc
+       61 catgatttta cgatcgaggg taaaggtgaa ggcaagccgt acgaagggtt acagcacatg
+      121 aaaatgacag tcaccaaagg cgcgcctctg ccgttttccg ttcatattct tacacctagc
+      181 cacatgtatg gaagcaaacc gtttaataag tatccagcgg atatcccaga ctaccacaaa
+      241 cagtcttttc ccgaaggtat gtcttgggag cggtcgatga tttttgaaga tggtggcgta
+      301 tgcaccgcca gtaatcactc cagcataaac ttgcaagaga actgtttcat ctatgatgtt
+      361 aaatttcatg gtgtgaacct gcctccggat gggcccgtaa tgcaaaaaac cattgctgga
+      421 tgggagccga gcgtggaaac actgtacgtg cgtgacggga tgttaaaaag tgacactgca
+      481 atggttttta aactgaaagg aggcggtcat catcgtgttg atttcaaaac gacgtataaa
+      541 gccaaaaaac ctgtcaagct gccagaattt catttcgttg aacatcgcct ggaactgacc
+      601 aaacacgata aagatttcac aacttgggac cagcaggagg cagccgaagg ccatttctca
+      661 ccgctgccga aggctctccc a
+//

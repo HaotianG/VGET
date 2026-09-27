@@ -1,0 +1,920 @@
+{
+  "schema_version": "0.2.0",
+  "tools": [
+    {
+      "name": "workspace.init",
+      "description": "Initialize a workspace and install the bundled real iGEM reference pack by default. empty=true skips it; demo=true explicitly adds synthetic fixtures instead. Never overwrites records.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "demo": {
+            "type": "boolean"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "registry.status",
+      "description": "Report bundled and installed starter records, source scope and last explicit live-check receipt. No network access.",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "registry.search",
+      "description": "Search the six bundled public reference parts offline, with attribution, license, hashes and source-quality caveats; does not install them.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "registry.search_public",
+      "description": "Explicit public network action: search one bounded page of anonymous published iGEM parts by a public phrase or exact BBa_ name. Sends only that public term; never send private objectives/notes. Returns metadata without sequences or imports.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "name": {
+            "type": "string",
+            "pattern": "BBa_[A-Za-z0-9]{1,24}"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "page_size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "registry.import_public",
+      "description": "Explicit public network action: fetch one exact published iGEM slug plus original GenBank, authors and source license metadata. No login or private data. Preserves source files and caveats; a public record is not evidence of suitability.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "pattern": "bba-[a-z0-9]{1,24}"
+          },
+          "expected_genbank_sha256": {
+            "type": "string",
+            "pattern": "[0-9a-f]{64}"
+          }
+        },
+        "required": [
+          "slug"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "registry.install",
+      "description": "Install all or named bundled reference records with exact original bytes and evidence. Idempotent; refuses changed existing pins.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "part_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "maxItems": 6
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "registry.verify",
+      "description": "Verify bundled files and installed record/evidence fingerprints offline. This does not establish biological function or live freshness.",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "registry.check_live",
+      "description": "Explicit network action: GET official public metadata and GenBank only for bundled identifiers. Return freshness receipt; never update records or send local sequences/objectives. May report rate limits.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "part_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "maxItems": 6
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "context.get",
+      "description": "Get capabilities, nine host contexts, source access status, conventions and evidence summaries. Host compatibility is unevaluated.",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "library.import",
+      "description": "Import exact local GenBank/FASTA/CSV/XLSX files with source provenance; no network retrieval.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 10000
+            },
+            "maxItems": 100
+          },
+          "source": {
+            "enum": [
+              "lab",
+              "igem",
+              "addgene",
+              "ncbi"
+            ]
+          }
+        },
+        "required": [
+          "paths"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "library.search_ncbi",
+      "description": "Explicit public network action: search NCBI nucleotide by a short public phrase, return at most 20 accession.version summaries, and do not fetch sequence or import records. Sends the phrase to NCBI; never send private objectives/notes. Two verified-TLS GETs are paced at about one per second per workspace; coordinate shared-IP limits across workspaces. No credentials, redirects or retries.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "library.fetch_ncbi",
+      "description": "Explicit network action: retrieve one public DNA GenBank record by exact NCBI accession.version. One verified-TLS GET; no credentials, uploads, redirects or retries. 2 MB/100,000-base limits; original bytes and annotations retained. Paced at <=1 request/sec per workspace; callers must coordinate shared-IP limits across workspaces. Biological function unevaluated.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "accession": {
+            "type": "string",
+            "pattern": "[A-Z][A-Z0-9_]{0,31}\\.[1-9][0-9]{0,8}"
+          },
+          "expected_raw_sha256": {
+            "type": "string",
+            "pattern": "[0-9a-f]{64}"
+          }
+        },
+        "required": [
+          "accession"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "library.search",
+      "description": "Search all query tokens across names, annotations and catalogue metadata. Returns summaries without bases; relevance is lexical, not biological.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "source": {
+            "enum": [
+              "lab",
+              "igem",
+              "addgene",
+              "ncbi",
+              "demo",
+              "design"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "record.inspect",
+      "description": "Inspect exact annotations, catalogue and provenance. Raw bases are opt-in.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "record_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "include_sequence": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "record_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "record.compare",
+      "description": "Compare exact sequences and circular equivalence without editing.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "left_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "right_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "left_id",
+          "right_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "convention.draft",
+      "description": "Extract supported rules from supplied notes into a reviewable draft.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        },
+        "required": [
+          "name",
+          "notes"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "convention.activate",
+      "description": "Activate supported rules after review. Imported text alone is not approval.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "convention_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "reviewed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "convention_id",
+          "reviewed"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "evidence.record",
+      "description": "Retain a cited text excerpt or user statement as evidence. Attribution is caller supplied, not independently authenticated.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "source_uri": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "kind": {
+            "enum": [
+              "user_statement",
+              "retrieved_source",
+              "agent_assessment"
+            ]
+          }
+        },
+        "required": [
+          "title",
+          "text",
+          "source_uri",
+          "kind"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "evidence.get",
+      "description": "Read a retained evidence item by exact identifier.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "evidence_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "evidence_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "job.start",
+      "description": "Persist the original ordinary-language objective. Calling agent supplies interpretation via job.update and job.plan.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "objective": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        },
+        "required": [
+          "objective"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "job.get",
+      "description": "Resume a job with current decisions, open questions, plan and artifact references.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "job_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "job.history",
+      "description": "Read immutable revision snapshots; no sequence bases are duplicated in job history.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "job_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "job.assess",
+      "description": "Record an unsupported or infeasible objective with reasons and evidence, without a fabricated design. A later update can resume it.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "outcome": {
+            "enum": [
+              "unsupported",
+              "infeasible"
+            ]
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "job_id",
+          "expected_revision",
+          "outcome",
+          "explanation",
+          "evidence_refs"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "job.update",
+      "description": "Record attributed decisions, criteria, assumptions and questions/answers. Any edit invalidates the active plan; expected_revision prevents lost updates.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "decisions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "enum": [
+                    "mode",
+                    "host_id",
+                    "name",
+                    "topology",
+                    "convention_id"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "origin": {
+                  "enum": [
+                    "user",
+                    "agent",
+                    "source",
+                    "default"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 10000
+                },
+                "evidence_refs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "maxItems": 100
+                }
+              },
+              "required": [
+                "field",
+                "value",
+                "origin",
+                "reason"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 100
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 10000
+                },
+                "blocks_export": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "text",
+                "blocks_export"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 100
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 10000
+            },
+            "maxItems": 100
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "question": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 10000
+                },
+                "blocks_export": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "question",
+                "blocks_export"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 100
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "question_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "answer": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 10000
+                },
+                "origin": {
+                  "enum": [
+                    "user",
+                    "agent",
+                    "source"
+                  ]
+                }
+              },
+              "required": [
+                "question_id",
+                "answer",
+                "origin"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "job_id",
+          "expected_revision"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "job.plan",
+      "description": "Submit create, modify, or exact-original inspect plan using discovered IDs. Inspect uses only record_id, source topology (including unknown), host_id=null if unassessed, and convention_id=null. Requires resolved blocking decisions/questions/criteria and pins complete sources.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "plan": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "object",
+                "properties": {
+                  "record_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "part_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    "maxItems": 50
+                  },
+                  "parent_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "target_feature_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "replacement_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "protected_feature_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    "maxItems": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              "summary": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 10000
+              },
+              "selections": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "record_id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 10000
+                    },
+                    "evidence_refs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "maxItems": 100
+                    }
+                  },
+                  "required": [
+                    "record_id",
+                    "reason",
+                    "evidence_refs"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 100
+              },
+              "alternatives": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "record_id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 10000
+                    }
+                  },
+                  "required": [
+                    "record_id",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 100
+              },
+              "criteria": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    "status": {
+                      "enum": [
+                        "satisfied_by_plan",
+                        "unevaluated",
+                        "unmet"
+                      ]
+                    },
+                    "evaluation": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 10000
+                    },
+                    "evidence_refs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "maxItems": 100
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "status",
+                    "evaluation",
+                    "evidence_refs"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 100
+              }
+            },
+            "required": [
+              "operation",
+              "summary",
+              "selections",
+              "alternatives",
+              "criteria"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "job_id",
+          "expected_revision",
+          "plan"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "job.run",
+      "description": "Materialize an exact plan hash; validate and export GenBank+HTML. Safe retries reuse verified output. This does not infer biological intent.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "plan_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "job_id",
+          "plan_hash"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "artifact.export",
+      "description": "Verify then copy a completed job package to a new directory. Existing destinations are not overwritten.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "destination": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        },
+        "required": [
+          "job_id",
+          "destination"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

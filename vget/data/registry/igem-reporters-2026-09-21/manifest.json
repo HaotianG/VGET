@@ -1,0 +1,431 @@
+{
+  "schema_version": 1,
+  "pack_id": "igem-reporters-2026-09-21",
+  "version": 1,
+  "source": "iGEM Registry public API",
+  "retrieved_on": "2026-09-21",
+  "built_at": "2026-09-21T08:19:54.192124+00:00",
+  "scope": "Six reporter/chromoprotein reference records. Not a full registry or a functional assembly library.",
+  "scientific_claims": "Registry-reported; biological function and host compatibility are unevaluated.",
+  "license": {
+    "spdx_id": "CC-BY-4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+    "title": "Creative Commons Attribution 4.0 International"
+  },
+  "parts": [
+    {
+      "name": "BBa_E0040",
+      "slug": "bba-e0040",
+      "uuid": "839dbacc-1089-4119-be94-b6d3767dc373",
+      "title": " green fluorescent protein derived from jellyfish Aequeora victoria wild-type GFP (SwissProt: P42212",
+      "description": "GFP (mut3b) [note that this part does not have a barcode]",
+      "length": 720,
+      "topology": "linear",
+      "sequence_sha256": "658c63f3314697c5ecce0641ce8ebaaaeddc615568426711c8b32cdb4967d6c1",
+      "role": {
+        "uuid": "65f1c72e-396c-4d02-b574-af06b3a073a9",
+        "accession": "SO:0000316",
+        "label": "CDS",
+        "deprecated": false,
+        "glyph": "http://sbols.org/visual/v2#CDSGlyph"
+      },
+      "tags": [
+        "GFP",
+        "mut3b",
+        "green",
+        "fluorescent reporter"
+      ],
+      "tags_origin": "curated search aliases based on registry title/description",
+      "biological_validation": "unevaluated",
+      "chassis": {
+        "designedFor": [],
+        "characterisedIn": [],
+        "sourceOrganism": []
+      },
+      "upstream_audit": {
+        "created": "2004-09-30T00:00:00.000Z",
+        "updated": "2021-09-08T20:22:45.000Z"
+      },
+      "authors": [
+        "Jennifer Braff"
+      ],
+      "license": {
+        "spdx_id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+        "title": "Creative Commons Attribution 4.0 International"
+      },
+      "warnings": [
+        "Registry-reported function is not independently validated.",
+        "No designed-for or characterised-in chassis entries are supplied by this API snapshot; no host compatibility is inferred.",
+        "This linear part record is not a complete expression construct."
+      ],
+      "files": {
+        "genbank": {
+          "path": "bba-e0040.gb",
+          "sha256": "cff3ebd393bf170978bf15c3e73f3fe16a250cc87ddc95de884bc392e2a90b15",
+          "source_url": "https://api.registry.igem.org/v1/parts/839dbacc-1089-4119-be94-b6d3767dc373.gb"
+        },
+        "metadata": {
+          "path": "bba-e0040.json",
+          "sha256": "e74b2860356c1c8f5bdd89b0180e28e27c73be369ed6f86e77942faf1f43f05b",
+          "source_url": "https://api.registry.igem.org/v1/parts/slugs/bba-e0040"
+        },
+        "attribution": {
+          "path": "bba-e0040-authors.json",
+          "sha256": "81c3b11c2e267e453e167914d2dded822e62255a05a0dc6a3343942e0642b08b",
+          "source_url": "https://api.registry.igem.org/v1/parts/839dbacc-1089-4119-be94-b6d3767dc373/authors"
+        },
+        "license": {
+          "path": "license-d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6.json",
+          "sha256": "8e7369a041e34980cda0c91430120b112b9c2b5aed6074c262f818d5fbbfe0cd",
+          "source_url": "https://api.registry.igem.org/v1/licenses/d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6"
+        }
+      }
+    },
+    {
+      "name": "BBa_E1010",
+      "slug": "bba-e1010",
+      "uuid": "2cd0919a-749d-41a7-a08f-d0f90957d6a6",
+      "title": " **highly** engineered mutant of red fluorescent protein from Discosoma striata (coral)",
+      "description": "monomeric RFP:\nRed Fluorescent Protein.\nExcitation peak: 584 nm\nEmission peak: 607 nm",
+      "length": 706,
+      "topology": "linear",
+      "sequence_sha256": "9115d7e886d546287dd9b25c6a81c6fc74a06aa5400a255e5bf97864400b16cd",
+      "role": {
+        "uuid": "65f1c72e-396c-4d02-b574-af06b3a073a9",
+        "accession": "SO:0000316",
+        "label": "CDS",
+        "deprecated": false,
+        "glyph": "http://sbols.org/visual/v2#CDSGlyph"
+      },
+      "tags": [
+        "mRFP",
+        "red",
+        "fluorescent reporter"
+      ],
+      "tags_origin": "curated search aliases based on registry title/description",
+      "biological_validation": "unevaluated",
+      "chassis": {
+        "designedFor": [],
+        "characterisedIn": [],
+        "sourceOrganism": []
+      },
+      "upstream_audit": {
+        "created": "2004-07-28T00:00:00.000Z",
+        "updated": "2021-09-08T20:22:45.000Z"
+      },
+      "authors": [
+        "Drew Endy"
+      ],
+      "license": {
+        "spdx_id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+        "title": "Creative Commons Attribution 4.0 International"
+      },
+      "warnings": [
+        "Registry-reported function is not independently validated.",
+        "No designed-for or characterised-in chassis entries are supplied by this API snapshot; no host compatibility is inferred.",
+        "This linear part record is not a complete expression construct.",
+        "Annotation ambiguity: the exported full-record CDS spans 706 bases, alongside a nested 675-base CDS. The full-record CDS is not divisible by three. Preserve source coordinates; review the intended coding feature before any design use. This may reflect an exporter role annotation; it does not establish a defective protein."
+      ],
+      "files": {
+        "genbank": {
+          "path": "bba-e1010.gb",
+          "sha256": "76ad0aa8c17aa18110ad5721a9299ccd50e341996d74216e9499d29b4829b417",
+          "source_url": "https://api.registry.igem.org/v1/parts/2cd0919a-749d-41a7-a08f-d0f90957d6a6.gb"
+        },
+        "metadata": {
+          "path": "bba-e1010.json",
+          "sha256": "598f8de0d8ed31c24fa876c460caf08155ef312dead4ea8e9cf87a10be4a2e39",
+          "source_url": "https://api.registry.igem.org/v1/parts/slugs/bba-e1010"
+        },
+        "attribution": {
+          "path": "bba-e1010-authors.json",
+          "sha256": "6b6590e120666b705f6e466450741073fce3047176dbb3724e4f42db107add9c",
+          "source_url": "https://api.registry.igem.org/v1/parts/2cd0919a-749d-41a7-a08f-d0f90957d6a6/authors"
+        },
+        "license": {
+          "path": "license-d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6.json",
+          "sha256": "8e7369a041e34980cda0c91430120b112b9c2b5aed6074c262f818d5fbbfe0cd",
+          "source_url": "https://api.registry.igem.org/v1/licenses/d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6"
+        }
+      }
+    },
+    {
+      "name": "BBa_E0020",
+      "slug": "bba-e0020",
+      "uuid": "42ad9eeb-720c-4f76-a3bb-2761314801a9",
+      "title": "engineered cyan fluorescent protein derived from A. victoria GFP",
+      "description": "-- No description --",
+      "length": 723,
+      "topology": "linear",
+      "sequence_sha256": "ca3c098bd23532e5f77c5add5dbc0c45c520cc6124db2bf8f472e18151b0af8a",
+      "role": {
+        "uuid": "65f1c72e-396c-4d02-b574-af06b3a073a9",
+        "accession": "SO:0000316",
+        "label": "CDS",
+        "deprecated": false,
+        "glyph": "http://sbols.org/visual/v2#CDSGlyph"
+      },
+      "tags": [
+        "ECFP",
+        "cyan",
+        "fluorescent reporter"
+      ],
+      "tags_origin": "curated search aliases based on registry title/description",
+      "biological_validation": "unevaluated",
+      "chassis": {
+        "designedFor": [],
+        "characterisedIn": [],
+        "sourceOrganism": []
+      },
+      "upstream_audit": {
+        "created": "2004-03-02T00:00:00.000Z",
+        "updated": "2021-09-08T20:22:45.000Z"
+      },
+      "authors": [
+        "Jennifer Braff",
+        "Caitlin Conboy"
+      ],
+      "license": {
+        "spdx_id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+        "title": "Creative Commons Attribution 4.0 International"
+      },
+      "warnings": [
+        "Registry-reported function is not independently validated.",
+        "No designed-for or characterised-in chassis entries are supplied by this API snapshot; no host compatibility is inferred.",
+        "This linear part record is not a complete expression construct.",
+        "The source description is a missing-description placeholder; the source title is retained separately."
+      ],
+      "files": {
+        "genbank": {
+          "path": "bba-e0020.gb",
+          "sha256": "8f2393db3e493e8eeeefcdb7b758d268c9ee4cd211bccb89c6bb88efeac1ee5d",
+          "source_url": "https://api.registry.igem.org/v1/parts/42ad9eeb-720c-4f76-a3bb-2761314801a9.gb"
+        },
+        "metadata": {
+          "path": "bba-e0020.json",
+          "sha256": "32ed50cc0f04df93f2abceaae36c3d60e5a49519a8269d4a011743ffbf9c3144",
+          "source_url": "https://api.registry.igem.org/v1/parts/slugs/bba-e0020"
+        },
+        "attribution": {
+          "path": "bba-e0020-authors.json",
+          "sha256": "e15df5984db3d2b8e15c3318a00ac7b3141a9fab8fc7db7fd62768e441c86066",
+          "source_url": "https://api.registry.igem.org/v1/parts/42ad9eeb-720c-4f76-a3bb-2761314801a9/authors"
+        },
+        "license": {
+          "path": "license-d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6.json",
+          "sha256": "8e7369a041e34980cda0c91430120b112b9c2b5aed6074c262f818d5fbbfe0cd",
+          "source_url": "https://api.registry.igem.org/v1/licenses/d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6"
+        }
+      }
+    },
+    {
+      "name": "BBa_E0030",
+      "slug": "bba-e0030",
+      "uuid": "0751a71a-bb93-44e6-b735-55214aebf7f4",
+      "title": "enhanced yellow fluorescent protein derived from A. victoria GFP",
+      "description": "-- No description --",
+      "length": 723,
+      "topology": "linear",
+      "sequence_sha256": "60a72529e2838fdb13e08fe934dd84765834d9beb3cc1081c86a22fd93748c9e",
+      "role": {
+        "uuid": "65f1c72e-396c-4d02-b574-af06b3a073a9",
+        "accession": "SO:0000316",
+        "label": "CDS",
+        "deprecated": false,
+        "glyph": "http://sbols.org/visual/v2#CDSGlyph"
+      },
+      "tags": [
+        "EYFP",
+        "yellow",
+        "fluorescent reporter"
+      ],
+      "tags_origin": "curated search aliases based on registry title/description",
+      "biological_validation": "unevaluated",
+      "chassis": {
+        "designedFor": [],
+        "characterisedIn": [],
+        "sourceOrganism": []
+      },
+      "upstream_audit": {
+        "created": "2004-03-02T00:00:00.000Z",
+        "updated": "2021-09-08T20:22:45.000Z"
+      },
+      "authors": [
+        "Caitlin Conboy",
+        "Jennifer Braff"
+      ],
+      "license": {
+        "spdx_id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+        "title": "Creative Commons Attribution 4.0 International"
+      },
+      "warnings": [
+        "Registry-reported function is not independently validated.",
+        "No designed-for or characterised-in chassis entries are supplied by this API snapshot; no host compatibility is inferred.",
+        "This linear part record is not a complete expression construct.",
+        "The source description is a missing-description placeholder; the source title is retained separately."
+      ],
+      "files": {
+        "genbank": {
+          "path": "bba-e0030.gb",
+          "sha256": "96d9fbe1e8d5f0b12d80c9fa04e8ecf3c29622913232bb045086c86601091021",
+          "source_url": "https://api.registry.igem.org/v1/parts/0751a71a-bb93-44e6-b735-55214aebf7f4.gb"
+        },
+        "metadata": {
+          "path": "bba-e0030.json",
+          "sha256": "30562e5b2b8d6ccb42a42460a21c0b93a9645738038f5a772fcd783a611f8883",
+          "source_url": "https://api.registry.igem.org/v1/parts/slugs/bba-e0030"
+        },
+        "attribution": {
+          "path": "bba-e0030-authors.json",
+          "sha256": "1d5c7160c908a9e17f41ed278189a51651757263af98a214a0d92affd32ca384",
+          "source_url": "https://api.registry.igem.org/v1/parts/0751a71a-bb93-44e6-b735-55214aebf7f4/authors"
+        },
+        "license": {
+          "path": "license-d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6.json",
+          "sha256": "8e7369a041e34980cda0c91430120b112b9c2b5aed6074c262f818d5fbbfe0cd",
+          "source_url": "https://api.registry.igem.org/v1/licenses/d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6"
+        }
+      }
+    },
+    {
+      "name": "BBa_K592009",
+      "slug": "bba-k592009",
+      "uuid": "71ca64b3-77ff-4e05-93ca-161cb8c9246c",
+      "title": "amilCP, blue chromoprotein",
+      "description": "This chromoprotein, amilCP, naturally exhibits very strong color when expressed. The color is blue/purple and is visible to naked eye, thereby requiring no instruments to observe. This DNA was provided by Jeffrey Miller at UCLA. It was made BioBrick-compatible after removal of one illegal internal restriction site (EcoRI).",
+      "length": 669,
+      "topology": "linear",
+      "sequence_sha256": "09ae084c97922ad65ea0c876b1bd9f23f7987aef502bb16654875f7310780fa4",
+      "role": {
+        "uuid": "65f1c72e-396c-4d02-b574-af06b3a073a9",
+        "accession": "SO:0000316",
+        "label": "CDS",
+        "deprecated": false,
+        "glyph": "http://sbols.org/visual/v2#CDSGlyph"
+      },
+      "tags": [
+        "amilCP",
+        "blue",
+        "chromoprotein"
+      ],
+      "tags_origin": "curated search aliases based on registry title/description",
+      "biological_validation": "unevaluated",
+      "chassis": {
+        "designedFor": [],
+        "characterisedIn": [],
+        "sourceOrganism": []
+      },
+      "upstream_audit": {
+        "created": "2011-09-18T00:00:00.000Z",
+        "updated": "2021-09-08T20:27:09.000Z"
+      },
+      "authors": [
+        "Lei Sun"
+      ],
+      "license": {
+        "spdx_id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+        "title": "Creative Commons Attribution 4.0 International"
+      },
+      "warnings": [
+        "Registry-reported function is not independently validated.",
+        "No designed-for or characterised-in chassis entries are supplied by this API snapshot; no host compatibility is inferred.",
+        "This linear part record is not a complete expression construct."
+      ],
+      "files": {
+        "genbank": {
+          "path": "bba-k592009.gb",
+          "sha256": "dad3771fe47770b03e22c36ebcee80ca8626c897294ae69b94198b1342bcd956",
+          "source_url": "https://api.registry.igem.org/v1/parts/71ca64b3-77ff-4e05-93ca-161cb8c9246c.gb"
+        },
+        "metadata": {
+          "path": "bba-k592009.json",
+          "sha256": "76702b47aa34963a70b39212f64cad920e97b2fda443d68e75daa5f13def30fc",
+          "source_url": "https://api.registry.igem.org/v1/parts/slugs/bba-k592009"
+        },
+        "attribution": {
+          "path": "bba-k592009-authors.json",
+          "sha256": "9962231ce63393c322f5f651756c17f7785016e31acab7311d1c10cab90a3b89",
+          "source_url": "https://api.registry.igem.org/v1/parts/71ca64b3-77ff-4e05-93ca-161cb8c9246c/authors"
+        },
+        "license": {
+          "path": "license-d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6.json",
+          "sha256": "8e7369a041e34980cda0c91430120b112b9c2b5aed6074c262f818d5fbbfe0cd",
+          "source_url": "https://api.registry.igem.org/v1/licenses/d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6"
+        }
+      }
+    },
+    {
+      "name": "BBa_K592012",
+      "slug": "bba-k592012",
+      "uuid": "e0503577-d3c1-45ea-a3fc-7595acf73e98",
+      "title": "eforRed, red chromoprotein",
+      "description": "This chromoprotein eforRed naturally exhibits red color when expressed. The color is weaker than RFP, however. On agar plates and in liquid culture, the color is readily visible to naked eye in less than 24 hours of incubation. The DNA was codon-optimized for expression in E.coli and synthesized by the Korean company Bioneer Corporation.",
+      "length": 681,
+      "topology": "linear",
+      "sequence_sha256": "1866b5e7957ddd205614cd0dc21e2fe9abb9e892c54479d4d5464d1435bf89dc",
+      "role": {
+        "uuid": "65f1c72e-396c-4d02-b574-af06b3a073a9",
+        "accession": "SO:0000316",
+        "label": "CDS",
+        "deprecated": false,
+        "glyph": "http://sbols.org/visual/v2#CDSGlyph"
+      },
+      "tags": [
+        "eforRed",
+        "red",
+        "chromoprotein"
+      ],
+      "tags_origin": "curated search aliases based on registry title/description",
+      "biological_validation": "unevaluated",
+      "chassis": {
+        "designedFor": [],
+        "characterisedIn": [],
+        "sourceOrganism": []
+      },
+      "upstream_audit": {
+        "created": "2011-09-18T00:00:00.000Z",
+        "updated": "2021-09-08T20:27:09.000Z"
+      },
+      "authors": [
+        "Lei Sun"
+      ],
+      "license": {
+        "spdx_id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+        "title": "Creative Commons Attribution 4.0 International"
+      },
+      "warnings": [
+        "Registry-reported function is not independently validated.",
+        "No designed-for or characterised-in chassis entries are supplied by this API snapshot; no host compatibility is inferred.",
+        "This linear part record is not a complete expression construct."
+      ],
+      "files": {
+        "genbank": {
+          "path": "bba-k592012.gb",
+          "sha256": "a259b2197a57a31b04e688e963255576d1563edc7ac896f15deeda121acccc04",
+          "source_url": "https://api.registry.igem.org/v1/parts/e0503577-d3c1-45ea-a3fc-7595acf73e98.gb"
+        },
+        "metadata": {
+          "path": "bba-k592012.json",
+          "sha256": "a2e79538545e1206a0cab146e9b28fb9c9b38bfa57aeb0c67f8ab28f175f3a95",
+          "source_url": "https://api.registry.igem.org/v1/parts/slugs/bba-k592012"
+        },
+        "attribution": {
+          "path": "bba-k592012-authors.json",
+          "sha256": "6108fb3232b123a4cf0e6d7f40e4e3cea45b2d22618738e9c607593b72fa57d8",
+          "source_url": "https://api.registry.igem.org/v1/parts/e0503577-d3c1-45ea-a3fc-7595acf73e98/authors"
+        },
+        "license": {
+          "path": "license-d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6.json",
+          "sha256": "8e7369a041e34980cda0c91430120b112b9c2b5aed6074c262f818d5fbbfe0cd",
+          "source_url": "https://api.registry.igem.org/v1/licenses/d6c69ca7-8be4-4bc0-b4a8-d3ae1d428aa6"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+LOCUS       BBa_E0030                723 bp    DNA     linear   SYN 08-SEP-2021
+DEFINITION  enhanced yellow fluorescent protein derived from A. victoria GFP.
+ACCESSION   BBa_E0030
+VERSION     BBa_E0030
+KEYWORDS    .
+FEATURES             Location/Qualifiers
+     source          1..723
+                     /mol_type="genomic DNA"
+     CDS             1..723
+                     /label="CDS"
+                     /note="SO:0000316 CDS"
+ORIGIN
+        1 atggtgagca agggcgagga gctgttcacc ggggtggtgc ccatcctggt cgagctggac
+       61 ggcgacgtaa acggccacaa gttcagcgtg tccggcgagg gcgagggcga tgccacctac
+      121 ggcaagctga ccctgaagtt catctgcacc accggcaagc tgcccgtgcc ctggcccacc
+      181 ctcgtgacca ccttcggcta cggcctgcaa tgcttcgccc gctaccccga ccacatgaag
+      241 ctgcacgact tcttcaagtc cgccatgccc gaaggctacg tccaggagcg caccatcttc
+      301 ttcaaggacg acggcaacta caagacccgc gccgaggtga agttcgaggg cgacaccctg
+      361 gtgaaccgca tcgagctgaa gggcatcgac ttcaaggagg acggcaacat cctggggcac
+      421 aagctggagt acaactacaa cagccacaac gtctatatca tggccgacaa gcagaagaac
+      481 ggcatcaagg tgaacttcaa gatccgccac aacatcgagg acggcagcgt gcagctcgcc
+      541 gaccactacc agcagaacac ccccatcggc gacggccccg tgctgctgcc cgacaaccac
+      601 tacctgagct accagtccgc cctgagcaaa gaccccaacg agaagcgcga tcacatggtc
+      661 ctgctggagt tcgtgaccgc cgccgggatc actctcggca tggacgagct gtacaagtaa
+      721 taa
+//

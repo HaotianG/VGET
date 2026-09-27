@@ -1,0 +1,29 @@
+# Local environments and generated packages
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+# Local research data and run history
+.vget/
+*-workspace/
+workspaces/
+local-data/
+private-data/
+outputs/
+work/
+# Credentials and machine settings
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+.DS_Store
+.idea/
+.vscode/
