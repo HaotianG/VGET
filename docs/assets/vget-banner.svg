@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="title desc">
+  <title id="title">VGET — Your agent. Traceable constructs.</title>
+  <desc id="desc">An agent-first research toolkit connecting an objective to an explicit plan and annotated GenBank plus explanatory HTML. Abstract circular feature-map artwork, not a biological design.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102b32"/><stop offset="1" stop-color="#09191f"/></linearGradient>
+    <linearGradient id="accent"><stop stop-color="#78e2bc"/><stop offset="1" stop-color="#9ae5ee"/></linearGradient>
+  </defs>
+  <rect width="1200" height="480" rx="24" fill="url(#bg)"/>
+  <g fill="none" stroke="#284149" stroke-width="1">
+    <path d="M0 80H1200M0 160H1200M0 240H1200M0 320H1200M0 400H1200" opacity=".28"/>
+    <circle cx="1000" cy="183" r="136"/><circle cx="1000" cy="183" r="107"/><circle cx="1000" cy="183" r="77"/>
+  </g>
+  <g transform="rotate(-90 1000 183)" fill="none" stroke-linecap="round">
+    <circle cx="1000" cy="183" r="107" stroke="#78e2bc" stroke-width="12" stroke-dasharray="220 453"/>
+    <circle cx="1000" cy="183" r="107" stroke="#a1b8f2" stroke-width="12" stroke-dasharray="150 523" stroke-dashoffset="-244"/>
+    <circle cx="1000" cy="183" r="107" stroke="#e9c47c" stroke-width="12" stroke-dasharray="120 553" stroke-dashoffset="-423"/>
+    <circle cx="1000" cy="183" r="77" stroke="#78e2bc" stroke-width="3" stroke-dasharray="125 359" stroke-dashoffset="-50"/>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="68" y="69" fill="#8db4ba" font-size="13" letter-spacing="3">AGENT-FIRST · LOCAL · OPEN SOURCE</text>
+    <text x="62" y="170" fill="#f3f8f4" font-size="96" font-weight="700" letter-spacing="-4">VGET</text>
+    <text x="68" y="224" fill="#d9eee7" font-size="30">Your agent. Traceable constructs.</text>
+    <text x="68" y="262" fill="#93afb5" font-size="18">Annotated GenBank + explanatory HTML, with the evidence attached.</text>
+    <text x="1000" y="178" text-anchor="middle" fill="#d9eee7" font-size="16" letter-spacing="3">PLAN</text>
+    <text x="1000" y="202" text-anchor="middle" fill="#93afb5" font-size="13">CHECK · EXPLAIN</text>
+    <g fill="#132e36" stroke="#31515a"><rect x="68" y="329" width="315" height="92" rx="12"/><rect x="440" y="329" width="315" height="92" rx="12"/><rect x="812" y="329" width="320" height="92" rx="12"/></g>
+    <g fill="#78e2bc" font-size="12" letter-spacing="2"><text x="90" y="357">01 / OBJECTIVE</text><text x="462" y="357">02 / EXPLICIT PLAN</text><text x="834" y="357">03 / PAIRED OUTPUTS</text></g>
+    <g fill="#e8f2ef" font-size="18"><text x="90" y="389">Intent, inputs, questions</text><text x="462" y="389">Sources, choices, checks</text><text x="834" y="389">GenBank + HTML + evidence</text></g>
+    <g fill="#739a9f" font-size="24"><text x="401" y="382">→</text><text x="773" y="382">→</text></g>
+    <text x="68" y="455" fill="#739a9f" font-size="12" letter-spacing="1">RESEARCH PROTOTYPE · BIOLOGICAL PERFORMANCE UNEVALUATED</text>
+  </g>
+</svg>

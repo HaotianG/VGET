@@ -1,0 +1,28 @@
+name: Bug report
+description: Report a reproducible software or artifact-correctness problem.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Use synthetic or redistributable public data. Report vulnerabilities privately through SECURITY.md."
+  - type: input
+    id: version
+    attributes:
+      label: Commit or version and environment
+      placeholder: Commit SHA, Python version, operating system
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Minimal reproduction
+      description: Commands or tool calls and the necessary public/synthetic inputs.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: Include relevant error codes or artifact differences, with private details removed.
+    validations:
+      required: true

@@ -165,3 +165,11 @@ def test_missing_original_source_blocks_provenance_pass(client,app):
     assert response.status_code==409
     assert response.get_json()['error']['code']=='SOURCE_INTEGRITY'
     assert not state(client)['designs']
+
+
+def test_default_workspace_is_in_current_directory(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv('VGET_DATA_DIR', raising=False)
+    created = create_app(testing=True)
+    assert Path(created.config['DATA_DIR']) == tmp_path / '.vget'
+    assert (tmp_path / '.vget' / 'state.json').is_file()

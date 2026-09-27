@@ -1,6 +1,6 @@
 # VGET optional manual HTTP interface
 
-This document describes the retained GUI compatibility API. The primary prototype 2 agent interface is the JSON CLI/Python toolkit in `tool-specs.json` and `skills/vget/references/workflow.md`. Both paths use the same `Service` and sequence/report core. The HTTP form brief remains a manual-input helper, not the agent reasoning layer.
+This document describes the retained GUI compatibility API. The primary prototype 2 agent interface is the JSON CLI/Python toolkit in [tool schemas](../../schemas/tool-specs.json) and [agent command guide](../../skills/vget/references/workflow.md). Both paths use the same `Service` and sequence/report core. The HTTP form brief remains a manual-input helper, not the agent reasoning layer.
 
 This is a local software prototype, not experimentally validated design software. Data uses the bundled official iGEM reference snapshot, explicit synthetic demonstration records or user-supplied files. Registry tools are exposed through the primary CLI/Python interface; this compatibility HTTP API does not add network endpoints. Nine host profiles selectable; compatibility is unevaluated. No cloud model or credentialed live source access by default.
 

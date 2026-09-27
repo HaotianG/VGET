@@ -1,21 +1,40 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "vget-agent-toolkit"
 version = "0.2.4"
 description = "Agent-neutral local objective-to-GenBank-and-HTML toolkit"
+readme = "README.md"
+license = "MIT AND CC-BY-4.0"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
 requires-python = ">=3.11"
+keywords = ["genbank", "synthetic-biology", "agent-tools", "bioinformatics"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
 dependencies = ["biopython==1.86", "Flask==3.1.2", "openpyxl==3.1.5"]
 
 [project.optional-dependencies]
 test = ["pytest==8.4.2"]
 
+[project.urls]
+Homepage = "https://github.com/HaotianG/VGET"
+Documentation = "https://github.com/HaotianG/VGET/tree/main/docs"
+Issues = "https://github.com/HaotianG/VGET/issues"
+Changelog = "https://github.com/HaotianG/VGET/blob/main/CHANGELOG.md"
+
 [project.scripts]
 vget = "vget.cli:main"
 
 [tool.setuptools.packages.find]
+where = ["src"]
 include = ["vget*"]
 
 [tool.setuptools.package-data]

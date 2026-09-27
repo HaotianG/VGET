@@ -136,7 +136,7 @@ def test_unknown_fields_never_silently_dropped(kit):
     with pytest.raises(ToolError):kit.call('job.start',{'objective':' '})
 
 def test_cli_machine_contract_without_server(tmp_path):
-    env={**os.environ,'PYTHONPATH':str(Path(__file__).resolve().parents[1])}
+    env={k:v for k,v in os.environ.items() if k!='PYTHONPATH'}
     args=[sys.executable,'-m','vget','--workspace',str(tmp_path/'cli')]
     r=subprocess.run(args+['tools'],capture_output=True,text=True,env=env)
     assert r.returncode==0,r.stderr
@@ -162,7 +162,7 @@ def test_gui_reads_same_agent_result_and_export_never_overwrites(kit,tmp_path):
     assert e.value.code=='DESTINATION_EXISTS'
 
 def test_cli_processes_do_not_lose_each_others_updates(tmp_path):
-    env={**os.environ,'PYTHONPATH':str(Path(__file__).resolve().parents[1])}
+    env={k:v for k,v in os.environ.items() if k!='PYTHONPATH'}
     args=[sys.executable,'-m','vget','--workspace',str(tmp_path/'shared'),'call','job.start','--input','-']
     processes=[subprocess.Popen(args,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env=env) for _ in range(6)]
     results=[p.communicate(json.dumps({'objective':f'Synthetic example {i}'}),timeout=20) for i,p in enumerate(processes)]

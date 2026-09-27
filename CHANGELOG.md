@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Licensed original code under MIT while preserving third-party data terms.
+- Added a visual README, documentation index, offline example and community templates.
+- Adopted the src layout, distribution metadata, dependency updates and documentation/package checks.
+- Fixed the GUI default workspace to use the current directory rather than the installed package directory.
+
 - Established the dedicated public Git repository from local prototype 0.2.4.
 - Added public installation/contribution documentation, CI, data attribution and the known-issue backlog.
 - Made the source launcher independent of the original development workspace.

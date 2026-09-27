@@ -1,0 +1,23 @@
+name: Capability request
+description: Describe a user outcome and how we can verify it.
+title: "[Capability]: "
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: User objective
+      description: What should an agent using VGET help someone accomplish?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance example
+      description: Describe a benign, public or synthetic case and the observable expected result.
+    validations:
+      required: true
+  - type: textarea
+    id: reuse
+    attributes:
+      label: Existing tools or alternatives
+      description: Link relevant software, documentation or prior work.
