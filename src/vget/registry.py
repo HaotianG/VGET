@@ -192,6 +192,63 @@ def search_public(store,query=None,page=1,page_size=10,name=None):
         raise ToolError('REGISTRY_RESPONSE_INVALID','iGEM public search returned an unexpected published-part response.',type(e).__name__) from e
 
 
+def _public_metadata(meta, authors, license):
+    return {'uuid':str(uuid.UUID(meta['uuid'])),'slug':meta['slug'],'status':'published','title':meta.get('title'),
+            'description':meta.get('description'),'role':meta.get('role'),'chassis':meta.get('chassis'),
+            'source':meta.get('source'),'audit':meta.get('audit'),'license':license,'authors':authors,
+            'reuse_status':'Source-declared license metadata retained; review the license and attribution before redistribution or commercial use.'}
+
+
+def _acquisition_hash(raw_hash, evidence):
+    return _hash({'genbank_sha256':raw_hash,'evidence':sorted(evidence,key=lambda b:b['filename'])})
+
+
+def _verify_public_acquisition(store, record):
+    """Reconstruct identity from verified original blobs, including legacy imports."""
+    try:
+        source=record['source'];slug=source['registry_slug']
+        def read(blob):
+            h=blob['raw_sha256']
+            if not isinstance(h,str) or not re.fullmatch(r'[0-9a-f]{64}',h):raise ValueError('Invalid original hash')
+            path=store.raw/h
+            raw=path.read_bytes()
+            if digest(raw)!=h:raise ValueError('Original blob changed')
+            return raw
+        raw=read(source)
+        blobs=source['evidence_blobs']
+        by_name={b['filename']:b for b in blobs}
+        if len(by_name)!=len(blobs):raise ValueError('Duplicate evidence filename')
+        meta=json.loads(read(by_name[slug+'.metadata.json']))
+        authors=json.loads(read(by_name[slug+'.authors.json']))
+        license=None
+        expected={slug+'.metadata.json':BASE+'parts/slugs/'+slug,
+                  slug+'.authors.json':BASE+f'parts/{str(uuid.UUID(meta["uuid"]))}/authors?page=1&pageSize=100'}
+        if meta.get('licenseUUID'):
+            expected[slug+'.license.json']=BASE+'licenses/'+str(uuid.UUID(meta['licenseUUID']))
+            license=json.loads(read(by_name[slug+'.license.json']))
+            if license.get('uuid')!=meta['licenseUUID']:raise ValueError('License identity changed')
+        if set(by_name)!=set(expected):raise ValueError('Missing or unexpected evidence')
+        for name,url in expected.items():
+            if by_name[name]['source_url']!=url:raise ValueError('Evidence origin changed')
+        if meta['slug']!=slug or meta['status']!='published':raise ValueError('Metadata identity changed')
+        parsed=parse_records(raw.decode('utf-8'),slug+'.gb')
+        if len(parsed)!=1:raise ValueError('Original contains multiple records')
+        expected_record=parsed[0]
+        if expected_record['name']!=meta['name'] or expected_record['sequence']!=str(meta.get('sequence','')).upper():
+            raise ValueError('Metadata and original sequence disagree')
+        expected_record['metadata']['igem_public']=_public_metadata(meta,authors,license)
+        comparable=('name','description','sequence','length','topology','features','metadata','sequence_sha256')
+        if any(record.get(k)!=expected_record.get(k) for k in comparable):raise ValueError('Parsed record or evidence metadata changed')
+        expected_source={'kind':'igem','filename':slug+'.gb','source_url':BASE+f'parts/{str(uuid.UUID(meta["uuid"]))}.gb',
+                         'acquisition':'igem_public_published_api','accession':meta['name'],'registry_uuid':str(uuid.UUID(meta['uuid']))}
+        if any(source.get(k)!=v for k,v in expected_source.items()):raise ValueError('Source identity changed')
+        identity=_acquisition_hash(source['raw_sha256'],blobs)
+        if source.get('acquisition_sha256',identity)!=identity:raise ValueError('Acquisition fingerprint changed')
+        return identity
+    except (OSError,ValueError,KeyError,TypeError,UnicodeError,SequenceError) as error:
+        raise ToolError('SOURCE_INTEGRITY','Previously acquired iGEM record or source evidence has changed; nothing was repaired or overwritten.',str(error)) from error
+
+
 def import_public_part(store,slug,expected_genbank_sha256=None):
     """Retrieve one explicitly selected published part and its provenance."""
     if not isinstance(slug,str) or not re.fullmatch(r'bba-[a-z0-9]{1,24}',slug):
@@ -244,33 +301,36 @@ def import_public_part(store,slug,expected_genbank_sha256=None):
         if expected_genbank_sha256 is not None and raw_hash!=expected_genbank_sha256:
             raise ToolError('REGISTRY_HASH_MISMATCH','GenBank bytes differ from the requested SHA-256 pin; nothing was imported.',{'actual_sha256':raw_hash})
         state=store.load()
-        existing=next((r for r in state['records'].values() if r.get('source',{}).get('acquisition')=='igem_public_published_api'
-            and r.get('source',{}).get('registry_slug')==slug and r.get('source',{}).get('raw_sha256')==raw_hash),None)
+        evidence_inputs=[(slug+'.metadata.json',meta_raw,meta_url),(slug+'.authors.json',authors_raw,authors_url)]
+        if license_raw is not None:evidence_inputs.append((slug+'.license.json',license_raw,license_url))
+        evidence=[{'filename':filename,'raw_sha256':digest(data),'source_url':url} for filename,data,url in evidence_inputs]
+        acquisition_hash=_acquisition_hash(raw_hash,evidence)
+        previous=[r for r in state['records'].values() if r.get('source',{}).get('acquisition')=='igem_public_published_api'
+                  and r.get('source',{}).get('registry_slug')==slug]
+        verified={r['id']:_verify_public_acquisition(store,r) for r in previous}
+        existing=next((r for r in previous if verified[r['id']]==acquisition_hash),None)
         if existing:
-            return {'record':existing,'diagnostics':[{'code':'DUPLICATE','message':'The exact original GenBank bytes are already present in this workspace.','record_id':existing['id']}],
+            return {'record':existing,'diagnostics':[{'code':'DUPLICATE','message':'The complete acquisition is already retained; parsed identity and every evidence blob were verified.','record_id':existing['id']}],
                 'biological_function':'unevaluated','reuse_notice':'The prior public import, including its source metadata and license response, is retained in this workspace.'}
         if len(state['records'])>=1000:raise ToolError('LIBRARY_RECORD_LIMIT','Workspace has reached the 1,000-record limit; nothing was imported.')
 
-        record['id']=uid('rec');record['_import_key']=f'public_igem:{slug}:{raw_hash}'
-        record['metadata']['igem_public']={'uuid':part_uuid,'slug':slug,'status':'published','title':meta.get('title'),
-            'description':meta.get('description'),'role':meta.get('role'),'chassis':meta.get('chassis'),
-            'source':meta.get('source'),'audit':meta.get('audit'),'license':license,'authors':authors,
-            'reuse_status':'Source-declared license metadata retained; review the license and attribution before redistribution or commercial use.'}
-        evidence=[]
-        for filename,data,url in ((slug+'.metadata.json',meta_raw,meta_url),(slug+'.authors.json',authors_raw,authors_url)):
-            evidence.append({'filename':filename,'raw_sha256':store.keep_raw(data),'source_url':url})
-        if license_raw is not None:evidence.append({'filename':slug+'.license.json','raw_sha256':store.keep_raw(license_raw),'source_url':license_url})
+        record['id']=uid('rec');record['_import_key']=f'public_igem:{slug}:{acquisition_hash}'
+        record['metadata']['igem_public']=_public_metadata(meta,authors,license)
+        for filename,data,url in evidence_inputs:store.keep_raw(data)
         retrieved=now();store.keep_raw(gb_raw)
         record['source'].update(kind='igem',filename=slug+'.gb',source_url=gb_url,raw_sha256=raw_hash,
             imported_at=retrieved,retrieved_at=retrieved,acquisition='igem_public_published_api',
             access='one explicitly selected anonymous published iGEM record; original GenBank retained; license is source metadata, not independently verified',
-            accession=meta.get('name'),registry_uuid=part_uuid,registry_slug=slug,evidence_blobs=evidence)
+            accession=meta.get('name'),registry_uuid=part_uuid,registry_slug=slug,evidence_blobs=evidence,acquisition_sha256=acquisition_hash)
         # Retain older bytes returned when the API metadata and GenBank disagree only by format.
         store.keep_raw(meta_raw);store.keep_raw(authors_raw)
         state['records'][record['id']]=record;store.save(state)
         warning=[]
-        previous=[r for r in state['records'].values() if r.get('source',{}).get('acquisition')=='igem_public_published_api' and r.get('source',{}).get('registry_slug')==slug and r['id']!=record['id']]
-        if previous:warning.append({'code':'IGEM_SOURCE_CHANGED','message':'This slug has an earlier imported source version. Both records remain; compare exact source hashes before selecting one.','record_ids':[r['id'] for r in previous]+[record['id']]})
+        if previous:
+            same_bytes=any(r['source']['raw_sha256']==raw_hash for r in previous)
+            warning.append({'code':'IGEM_EVIDENCE_CHANGED' if same_bytes else 'IGEM_SOURCE_CHANGED',
+                'message':'This slug has an earlier acquisition. Complete changed evidence is retained as a separate revision, including when sequence bytes are unchanged.',
+                'record_ids':[r['id'] for r in previous]+[record['id']]})
         if meta.get('sequenceLength') is None:
             warning.append({'code':'IGEM_METADATA_LENGTH_MISSING','message':'The part-detail API omitted sequenceLength; GenBank length and exact sequence were checked against the API sequence.'})
         if not license:

@@ -4,12 +4,14 @@ Measure accepted user outcomes, not registry size or tool counts.
 
 ## 1. Correctness and release foundation
 
-- Resolve F1–F6 with independent regression cases.
+- Preserve the F1–F6 regression cases and extend acceptance beyond the bounded local repairs.
 - Keep every release tied to a reviewed commit, CI results, source/data attribution and clean wheel installation.
 - Add typed output contracts and migrations as the model stabilizes.
 - Preserve original inputs and explicit uncertainty; never silently relax a requested condition.
 
 ## 2. Evaluate existing engines
+
+The local 0.2.6.dev1 milestone selected pinned direct pydna for a bounded two-fragment circular homology operation after a five-fixture comparison with DNA Cauldron. The local 0.2.7.dev1 milestone adds [explicit fragment planning](reference/fragment-planning.md) and synthetic objective-to-artifact replay. See the [assembly contract](reference/homology-assembly.md). This does not select a universal backend or finish the broader method evaluation below.
 
 Compare a pinned subset of [OpenCloning/pydna](https://github.com/OpenCloning/OpenCloning_backend) with direct [pydna](https://github.com/pydna-group/pydna), and [DNA Cauldron](https://github.com/Edinburgh-Genome-Foundry/DnaCauldron) where the selected assembly family warrants it. Use identical fixtures and one authoritative backend per operation. Check independent sequence/annotation expectations, ambiguity, history, dependency compatibility and rights.
 

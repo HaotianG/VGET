@@ -102,17 +102,22 @@ def search_ncbi(store,query,limit=10):
                 if not isinstance(data,dict):raise ValueError('Invalid summary map')
             except (ValueError,KeyError,TypeError) as error:
                 raise ToolError('NCBI_INVALID_RESPONSE','NCBI returned an unexpected nucleotide summary response.',type(error).__name__) from error
-    records=[]
+    records=[];diagnostics=[]
     for uid_ in ids:
         item=summaries.get(uid_)
-        if not isinstance(item,dict):continue
+        if not isinstance(item,dict):
+            diagnostics.append({'uid':uid_,'code':'NCBI_SUMMARY_MISSING','message':'Search returned this ID but no usable summary.'});continue
+        if item.get('error'):
+            diagnostics.append({'uid':uid_,'code':'NCBI_SUMMARY_ERROR','message':str(item['error'])});continue
         accession=item.get('accessionversion')
-        if not isinstance(accession,str) or not re.fullmatch(ACCESSION_PATTERN,accession):continue
+        if not isinstance(accession,str) or not re.fullmatch(ACCESSION_PATTERN,accession):
+            diagnostics.append({'uid':uid_,'code':'NCBI_SUMMARY_INVALID','message':'Summary lacks a valid accession.version.'});continue
         records.append({'accession_version':accession,'title':item.get('title'),'length':item.get('slen',item.get('length')),
             'molecule_type':item.get('moltype'),'topology':item.get('topology'),'organism':item.get('organism'),
             'source_url':'https://www.ncbi.nlm.nih.gov/nuccore/'+accession})
     return {'source':'NCBI Nucleotide','search_term':term,'retrieved_at':now(),'result_count':count,'returned':len(records),
         'limit':limit,'has_more':count>len(ids),'search_url':search_url,'summary_url':summaries_url,'records':records,
+        'diagnostics':diagnostics,'summary_status':'partial' if records and diagnostics else 'unusable' if diagnostics else 'complete',
         'notice':'Candidates only; no sequence was fetched or imported. Confirm the record is the intended complete plasmid or part before calling library.fetch_ncbi. NCBI search is not host or biological validation.'}
 
 

@@ -48,7 +48,7 @@ def catalogue_rows(data,filename):
         if len(rows)>MAX_RECORDS:raise SequenceError('IMPORT_LIMIT','Catalogue limit is 1,000 rows.')
     return rows
 
-def import_files(files,source,state,store):
+def import_files(files,source,state,store,inspection_only=False):
     if source not in ('lab','igem','addgene','ncbi'):raise SequenceError('SOURCE_INVALID','Choose lab, iGEM, Addgene or NCBI as provenance for supplied exports.')
     parsed=[];catalogues=[];diagnostics=[];raws={}
     for filename,data in files:
@@ -56,13 +56,14 @@ def import_files(files,source,state,store):
         if not filename or len(filename)>250:raise SequenceError('FILENAME_INVALID','Invalid input filename.')
         h=digest(data);raws[h]=data
         if filename.lower().endswith(('.csv','.xlsx')):
+            if inspection_only:raise SequenceError('inspection_format','Inspection-only import accepts GenBank originals, not catalogues.')
             catalogues.append((filename,h,catalogue_rows(data,filename)));continue
         try:text=data.decode('utf-8-sig')
         except UnicodeDecodeError as e:raise SequenceError('UNSUPPORTED_FORMAT','Sequence files must be UTF-8 GenBank or FASTA.') from e
-        for index,r in enumerate(parse_records(text,filename)):
+        for index,r in enumerate(parse_records(text,filename,allow_parser_warnings=inspection_only)):
             if r['length']>MAX_BASES:raise SequenceError('IMPORT_LIMIT','Prototype sequence limit is 100,000 bases per record.')
             r['source'].update(kind=source,filename=filename,raw_sha256=h,imported_at=now(),access='user-supplied export; not fetched or independently authenticated')
-            r['_import_key']=f'{h}:{index}:{source}';r['id']=uid('rec');parsed.append(r)
+            r['_import_key']=f'{h}:{index}:{source}'+(':inspection' if inspection_only else '');r['id']=uid('rec');parsed.append(r)
     for filename,h,rows in catalogues:
         for index,row in enumerate(rows):
             if any(str(v).lstrip().startswith(('=','+','@')) for v in row.values()):
@@ -104,6 +105,9 @@ def import_files(files,source,state,store):
         conflicts=[x for x in existing.values() if x['name']==r['name']]
         if conflicts:diagnostics.append({'code':'NAME_CONFLICT','message':f'{r["name"]}: another record has this label; both versions are retained. Select exact record IDs.','record_ids':[x['id'] for x in conflicts]+[r['id']]})
         accepted.append(r);existing[r['id']]=r;keys[r['_import_key']]=r
+        if r.get('metadata',{}).get('parser_warnings'):
+            diagnostics.append({'code':'PARSER_WARNING','record_id':r['id'],'message':'Source retained for unchanged inspection only. Map locations are parser interpretations.',
+                                'warnings':r['metadata']['parser_warnings']})
     # Parsing and conflict checks complete before any visible state mutation.
     for h,data in raws.items():store.keep_raw(data)
     state['records']=existing

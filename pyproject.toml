@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vget-agent-toolkit"
-version = "0.2.4"
+version = "0.2.7.dev1"
 description = "Agent-neutral local objective-to-GenBank-and-HTML toolkit"
 readme = "README.md"
 license = "MIT AND CC-BY-4.0"
@@ -23,6 +23,7 @@ dependencies = ["biopython==1.86", "Flask==3.1.2", "openpyxl==3.1.5"]
 
 [project.optional-dependencies]
 test = ["pytest==8.4.2"]
+assembly = ["pydna==5.5.8", "networkx>=3.1"]
 
 [project.urls]
 Homepage = "https://github.com/HaotianG/VGET"

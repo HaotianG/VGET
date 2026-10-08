@@ -1,4 +1,5 @@
 """Check tracked documentation targets and the published tool contract."""
+import argparse
 import json
 from pathlib import Path
 import re
@@ -8,7 +9,14 @@ import xml.etree.ElementTree as ET
 from vget.contracts import TOOL_LIST
 
 root = Path(__file__).resolve().parents[1]
-files = subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode().split('\0')
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--file-list', type=Path, help='JSON source-file inventory for an unpacked archive without Git metadata')
+args = parser.parse_args()
+files = json.loads(args.file_list.read_text()) if args.file_list else subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode().split('\0')
+if not isinstance(files,list) or any(not isinstance(name,str) for name in files):
+    raise SystemExit('Source inventory must be a list of relative filenames.')
+if any(Path(name).is_absolute() or not (root/name).resolve().is_relative_to(root.resolve()) for name in filter(None,files)):
+    raise SystemExit('Source inventory contains a path outside the source root.')
 failures = []
 for name in filter(None, files):
     path = root / name
@@ -30,4 +38,4 @@ if svg.tag != '{http://www.w3.org/2000/svg}svg':
     failures.append('Banner is not an SVG.')
 if failures:
     raise SystemExit('\n'.join(failures))
-print('Local documentation targets, runtime tool schema and SVG parse checked.')
+print(f'{len(list(filter(None,files)))} source files: local documentation targets, runtime tool schema and SVG parse checked.')

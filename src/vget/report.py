@@ -267,12 +267,12 @@ code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-s
 '''
 
 
-def render_report(design: dict, genbank_text: str) -> str:
+def render_report(design: dict, genbank_text: str | bytes) -> str:
     """Render a standalone report without evaluating or changing input records."""
     r = design['record']
     seq = r.get('sequence', '')
     actual_hash = hashlib.sha256(seq.encode('utf-8')).hexdigest()
-    gbk_bytes = genbank_text.encode('utf-8')
+    gbk_bytes = genbank_text.encode('utf-8') if isinstance(genbank_text,str) else genbank_text
     gbk_hash = hashlib.sha256(gbk_bytes).hexdigest()
     href = 'data:application/octet-stream;base64,' + base64.b64encode(gbk_bytes).decode('ascii')
     identity = [
@@ -301,10 +301,26 @@ def render_report(design: dict, genbank_text: str) -> str:
     features = _features(r)
     map_html = _map(r)
     summary = f'<h3>Exact sequence representation</h3><p>{len(seq):,} bp · {_e(r.get("topology"))} · {len(r.get("features", []))} annotated features</p><p class="muted">Map spans follow the supplied exact coordinates. Compound locations retain every segment. Arrowheads denote strand direction. Select a feature to reach its annotation row.</p><p class="notice">The map describes sequence composition; laboratory assembly and host compatibility remain unevaluated.</p>'
+    if r.get('metadata',{}).get('inspection_only'):
+        summary = summary.replace('Map spans follow the supplied exact coordinates.', 'Map spans show interpreted locations; original expressions remain source evidence.')
+        summary = '<p class="notice"><strong>Parser interpretation.</strong> This map displays the parser’s interpretation of the original annotations. Source warnings and original location expressions are retained in the provenance. The downloaded GenBank is unchanged; no repair is claimed.</p>' + summary
     if r.get('topology') == 'circular':
         map_block = '<div class="map-grid"><div class="map-scroll">' + map_html + '</div><div>' + summary + '</div></div>'
     else:
         map_block = summary + '<div class="map-scroll">' + map_html + '</div>'
+    assembly_html = ''
+    fragment_html = ''
+    planning = r.get('metadata',{}).get('fragment_planning')
+    if planning:
+        blocks=[]
+        for fragment in planning:
+            rows=''.join('<tr><td>'+_e(f['label'])+'</td><td><code>'+_e(f['source_location'])+'</code></td><td>'+_e(f['status'])+'</td><td><code>'+_e(f['fragment_location'])+'</code></td></tr>' for f in fragment['features'])
+            blocks.append('<h3>'+_e(fragment['source_name'])+'</h3><p>Ranges (0-based half-open): <code>'+_e(fragment['ranges'])+'</code>; orientation: '+_e(fragment['orientation'])+'; prepared length: '+str(fragment['fragment_length'])+' bp.</p><div class="table-wrap"><table><thead><tr><th>Source feature</th><th>Original location</th><th>Outcome</th><th>Prepared location</th></tr></thead><tbody>'+rows+'</tbody></table></div><details><summary>Bibliography projection and exact preparation evidence</summary>'+_pre(fragment)+'</details>')
+        fragment_html='<section><h2>Fragment preparation and annotation comparison</h2><p class="notice">Source records remain unchanged. Complete selected features are retained; annotations wholly outside the ranges are explicitly excluded. A single whole-record source annotation can be projected with an audit; cuts through other features are rejected. Bibliography text is retained with audited range projection. This coordinate operation does not validate physical cutting, PCR or reaction conditions.</p>'+''.join(blocks)+'</section>'
+    assembly = r.get('metadata',{}).get('assembly')
+    if assembly:
+        rows = ''.join('<tr><td>'+str(i+1)+'</td><td>'+_e(j['left_source_id'])+' → '+_e(j['right_source_id'])+'</td><td>'+str(j['length'])+' bp</td><td>'+str(j['output_range'][0]+1)+'–'+str(j['output_range'][1])+'</td><td><code>'+_e(j['overlap'])+'</code></td></tr>' for i,j in enumerate(assembly['junctions']))
+        assembly_html = '<section><h2>Homology assembly prediction</h2><p>Two prepared linear inputs, supplied orientations, one unique circular product. Backend: '+_e(assembly['backend'])+' '+_e(assembly['backend_version'])+'. Origin: backbone base 0.</p><div class="table-scroll"><table><thead><tr><th>Junction</th><th>Sources</th><th>Overlap</th><th>Output span (1-based inclusive)</th><th>Exact homology</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="notice">Exact terminal homology and sequence prediction passed. Primers, cutting, thermal conditions, host suitability and experimental assembly remain unevaluated. Shared-overlap annotations from both inputs are retained independently.</p></section>'
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
@@ -313,6 +329,8 @@ def render_report(design: dict, genbank_text: str) -> str:
 <p class="subtitle">{_e(design.get('objective'))}</p><div class="toolbar"><a class="download" href="{href}" download="construct.gbk">Download GenBank</a>{_badge(design.get('status', 'unknown'))}<span class="small">Computational result · experimental function unverified</span></div></header>
 <section><h2>Design identity</h2><dl class="identity">{identity_html}</dl></section>
 {_agent_rationale(design.get('agent_context'))}
+{fragment_html}
+{assembly_html}
 <section><h2>Sequence &amp; annotation map</h2>{map_block}</section>
 <section><h2>Features</h2>{features}</section>
 <section><h2>Validation record</h2><ul class="checks">{checks}</ul></section>
@@ -324,7 +342,7 @@ def render_report(design: dict, genbank_text: str) -> str:
 <footer>VGET local prototype · Standalone HTML · No scripts, external fonts, or remote resources</footer></main></body></html>'''
 
 
-def package_files(design: dict, genbank_text: str, source_records: list[dict], originals: dict[str, bytes]) -> dict[str, bytes]:
+def package_files(design: dict, genbank_text: str | bytes, source_records: list[dict], originals: dict[str, bytes]) -> dict[str, bytes]:
     """Return deterministic bundle members; input names never become paths.
 
     The manifest hashes every payload file and intentionally excludes itself.
@@ -332,7 +350,7 @@ def package_files(design: dict, genbank_text: str, source_records: list[dict], o
     recorded as JSON data. No input object is modified.
     """
     files = {
-        'construct.gbk': genbank_text.encode('utf-8'),
+        'construct.gbk': genbank_text.encode('utf-8') if isinstance(genbank_text,str) else genbank_text,
         'report.html': render_report(design, genbank_text).encode('utf-8'),
         'design.json': _dump(design),
         'features.json': _dump(design['record'].get('features', [])),
@@ -342,6 +360,8 @@ def package_files(design: dict, genbank_text: str, source_records: list[dict], o
     }
     if design.get('agent_context') is not None:
         files['agent-context.json'] = _dump(design['agent_context'])
+    if design['record'].get('metadata',{}).get('fragment_planning') is not None:
+        files['fragment-planning.json']=_dump(design['record']['metadata']['fragment_planning'])
     originals_index = []
     for i, (name, data) in enumerate(sorted(originals.items()), 1):
         if not isinstance(data, bytes):

@@ -20,7 +20,7 @@
 **VGET gives your AI agent a local toolkit for traceable construct work.** The agent interprets the objective, investigates sources and resolves consequential questions. VGET records the plan, runs supported sequence operations, and returns **annotated GenBank + an explanatory offline HTML report**.
 
 > [!IMPORTANT]
-> **Research prototype.** Current operations are exact sequence composition, one contiguous feature replacement and unchanged GenBank inspection. General cloning simulation and validated host compatibility are still planned. Read the [known correctness issues](docs/KNOWN_ISSUES.md) before using transformed records.
+> **Research prototype.** Current operations are exact composition, one contiguous feature replacement, unchanged GenBank inspection and optional [two-fragment circular homology prediction](docs/reference/homology-assembly.md). General cloning simulation and validated host compatibility remain planned. Read the [correctness status and remaining limits](docs/KNOWN_ISSUES.md) before using transformed records.
 
 ## Why VGET?
 
@@ -79,7 +79,8 @@ The main route is `job.start` → discovery and `job.update` → `job.plan` → 
 
 | Area | Current scope |
 |---|---|
-| Create / modify | Ordered composition of finalized inputs; one isolated contiguous replacement |
+| Create / modify | Ordered composition; optional explicit circular homology prediction from two prepared linear inputs; one isolated contiguous replacement |
+| Fragment planning | Explicit source ranges and orientation, annotation preview and audited exclusions; [exact contract](docs/reference/fragment-planning.md) |
 | Inspect / compare | Original GenBank inspection, sequence differences and circular equivalence |
 | Local libraries | GenBank, FASTA, CSV and XLSX import |
 | Public sources | Bundled iGEM references; explicit iGEM search/import and NCBI search/versioned retrieval |
@@ -88,7 +89,7 @@ The main route is `job.start` → discovery and `job.update` → `job.plan` → 
 
 The nine targets are E. coli, B. subtilis, S. cerevisiae, Pichia pastoris, Sf9, Sf21, High-5, CHO and HEK293. Addgene currently supports permitted file imports only. A source record or structural pass does not establish function, host suitability or experimental confirmation.
 
-See [known issues](docs/KNOWN_ISSUES.md) for the annotation-coordinate and criterion-enforcement gaps, and the [roadmap](docs/ROADMAP.md) for engine evaluation and scoped scientific workflows.
+See [correctness status](docs/KNOWN_ISSUES.md) and [typed requirements](docs/reference/output-criteria.md) for the current export gates and unsupported transformations, and the [roadmap](docs/ROADMAP.md) for engine evaluation and scoped scientific workflows.
 
 ## Find your way
 

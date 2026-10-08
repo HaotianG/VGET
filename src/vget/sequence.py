@@ -107,7 +107,7 @@ def _check_sequence(sequence):
         raise SequenceError('invalid_sequence', 'Sequence must contain IUPAC DNA symbols only.', {'invalid_symbols': bad})
 
 
-def parse_records(text, filename):
+def parse_records(text, filename, *, allow_parser_warnings=False):
     if not isinstance(text, str) or not text.strip():
         raise SequenceError('empty_input', 'Input file is empty.')
     if text.lstrip().startswith('>'):
@@ -135,11 +135,12 @@ def parse_records(text, filename):
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter('always')
             bio_records = list(SeqIO.parse(io.StringIO(text.lstrip()), fmt))
-        if caught:
+        if caught and not allow_parser_warnings:
             raise SequenceError('malformed_input', 'Parser reported ambiguous or malformed input; review the original file.',
                                 [str(w.message) for w in caught])
         if not bio_records:
             raise SequenceError('empty_input', 'No sequence records were found.')
+        original_blocks = [b for b in re.split(r'(?m)(?=^LOCUS )', text.lstrip()) if b.startswith('LOCUS ')] if allow_parser_warnings else []
         result = []
         for bio in bio_records:
             sequence = str(bio.seq).upper()
@@ -155,6 +156,23 @@ def parse_records(text, filename):
                                    'annotations': _encode_annotation(bio.annotations, len(sequence)),
                                    'dbxrefs': list(bio.dbxrefs)},
                       'source': {'kind': 'import', 'filename': str(filename), 'format': fmt}}
+            if allow_parser_warnings:
+                if fmt != 'genbank':
+                    raise SequenceError('inspection_format', 'Inspection-only import requires GenBank originals.')
+                record['metadata'].update(inspection_only=True, parser_warnings=[str(w.message) for w in caught])
+                block = original_blocks[len(result)]
+                expressions = []
+                active = False
+                qualifier = False
+                for line in block.splitlines():
+                    if line.startswith('FEATURES'): active = True; continue
+                    if active and line and not line.startswith(' '): break
+                    if not active: continue
+                    if line[5:21].strip():
+                        expressions.append(line[21:].strip()); qualifier = False
+                    elif line[21:].lstrip().startswith('/'): qualifier = True
+                    elif expressions and not qualifier: expressions[-1] += line[21:].strip()
+                record['metadata']['original_feature_locations'] = expressions
             record = _finalize(record)
             failures = [c for c in validate_record(record) if c['status'] == 'fail']
             if failures:
@@ -167,7 +185,7 @@ def parse_records(text, filename):
         raise SequenceError('parse_error', f'Cannot parse {filename}: {exc}') from exc
 
 
-def to_genbank(record):
+def to_genbank(record, *, audited_reference_ranges=False):
     failures = [c for c in validate_record(record) if c['status'] == 'fail']
     if failures:
         raise SequenceError('invalid_record', 'Cannot export an invalid record.', failures)
@@ -175,6 +193,16 @@ def to_genbank(record):
     bio = SeqRecord(Seq(record['sequence']), id=metadata.get('record_id', record['name']),
                     name=metadata.get('record_name', record['name']), description=record.get('description', ''))
     bio.annotations = _decode_annotation(metadata.get('annotations', {}), record['length'], record['topology'])
+    if audited_reference_ranges:
+        for reference in bio.annotations.get('references', []):
+            # Biopython 1.86 writes only a single reference start/end; a join
+            # otherwise becomes its bounding interval, including excluded DNA.
+            # Keep exact disjoint citation scopes as remarks plus JSON evidence.
+            if len(reference.location)>1 or any(len(loc.parts)>1 for loc in reference.location):
+                exact='; '.join(_location_text(loc,record['length']) for loc in reference.location)
+                note='VGET exact projected citation ranges (1-based inclusive): '+exact+'. Structured reference range omitted to avoid a misleading bounding interval; see fragment-planning.json and record metadata.'
+                reference.comment=(reference.comment+'\n' if reference.comment else '')+note
+                reference.location=[]
     bio.annotations['molecule_type'] = 'DNA'
     if record['topology'] == 'unknown':
         bio.annotations.pop('topology', None)
@@ -223,11 +251,18 @@ def validate_record(record):
 
 
 def _require_transformable(record):
+    if record.get('metadata', {}).get('inspection_only'):
+        raise SequenceError('inspection_only_record', 'This record is reserved for exact original inspection; parser interpretations cannot be used for transformations.')
     failures = [c for c in validate_record(record) if c['status'] == 'fail']
     if failures:
         raise SequenceError('invalid_record', 'Input record failed structural validation.', failures)
     for feature in record['features']:
         _require_exact(_location(feature['location'], record['length'], record['topology']))
+        unsupported = sorted(k for k in feature.get('qualifiers', {})
+                             if k.casefold() in {'transl_except', 'anticodon', 'rpt_unit_range', 'tag_peptide'})
+        if unsupported:
+            raise SequenceError('unsupported_qualifier_transform', 'Coordinate-bearing qualifiers require a mapping this engine does not implement. Use unchanged inspection or a separately reviewed derivative.',
+                                {'feature_id': feature['id'], 'qualifiers': unsupported})
 
 
 def _require_exact(loc):

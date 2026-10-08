@@ -17,7 +17,7 @@ Exact API URLs, titles, source hashes, dates and attribution are retained in the
 
 ## Dependencies
 
-Biopython, Flask, openpyxl and their dependencies are installed separately and retain their own licenses. No implementation from OpenCloning, pydna, DNA Chisel, DNA Cauldron, pLannotate, SeqViz or CGView.js is bundled. They are candidates for future evaluated integrations.
+Biopython, Flask, openpyxl and their dependencies are installed separately and retain their own licenses. The optional assembly extra installs pydna 5.5.8 (source metadata declares BSD) and NetworkX (BSD-3-Clause), including their dependencies, separately. No upstream implementation is vendored into VGET. The bounded adapter invokes pydna's published assembly API; it is not an OpenCloning server integration. DNA Cauldron was evaluated on synthetic fixtures but is not a runtime dependency. DNA Chisel, pLannotate, SeqViz and CGView.js remain future evaluation candidates.
 
 ## User data
 
