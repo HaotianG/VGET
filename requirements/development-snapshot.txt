@@ -1,7 +1,7 @@
 # Observed local Python 3.14 environment, including optional assembly and tests.
 annotated-types==0.8.0
 appdirs==1.4.4
-biopython==1.86
+biopython==1.88
 blinker==1.9.0
 build==1.6.1
 click==8.5.0
