@@ -1,0 +1,815 @@
+{
+  "fixture_version": 1,
+  "scope": "Synthetic fixed software inputs; held-out means absent from the previous backend comparison, not an independently sampled user cohort.",
+  "coordinate_system": "0-based half-open; range list in physical forward path order; orientation applied after selection",
+  "cases": [
+    {
+      "id": "linear_ranges",
+      "kind": "success",
+      "sources": [
+        {
+          "name": "linear_ranges_source_0",
+          "sequence": "GGGGGGGTGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGACCCCCCCCCCC",
+          "topology": "linear",
+          "features": [
+            {
+              "label": "backbone_core",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  31,
+                  91,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "backbone_core"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "right_overlap",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  91,
+                  115,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "right_overlap"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "excluded_0",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  0,
+                  6,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "excluded_0"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            }
+          ],
+          "reference": {
+            "title": "Synthetic source bibliography",
+            "authors": "Fixture",
+            "journal": "Software test",
+            "parts": [
+              [
+                0,
+                126,
+                null
+              ]
+            ]
+          }
+        },
+        {
+          "name": "linear_ranges_source_1",
+          "sequence": "GGGGGGGGGGGGGACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCACTGCACTGAGATCGTACCGATGCTACCCCCCCCC",
+          "topology": "linear",
+          "features": [
+            {
+              "label": "insert_core",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  37,
+                  80,
+                  -1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "insert_core"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "origin_overlap",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  80,
+                  104,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "origin_overlap"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "excluded_1",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  0,
+                  12,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "excluded_1"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            }
+          ],
+          "reference": {
+            "title": "Synthetic source bibliography",
+            "authors": "Fixture",
+            "journal": "Software test",
+            "parts": [
+              [
+                0,
+                113,
+                null
+              ]
+            ]
+          }
+        }
+      ],
+      "fragments": [
+        {
+          "source_index": 0,
+          "ranges": [
+            {
+              "start": 7,
+              "end": 115
+            }
+          ],
+          "orientation": "forward"
+        },
+        {
+          "source_index": 1,
+          "ranges": [
+            {
+              "start": 13,
+              "end": 104
+            }
+          ],
+          "orientation": "forward"
+        }
+      ],
+      "overlaps": [
+        "ACGTCAGTGCATGACCTAGTACGA",
+        "TGCACTGAGATCGTACCGATGCTA"
+      ],
+      "objective": "Use the two supplied synthetic library records to create a circular computational construct from the explicitly selected ranges and orientations. Retain complete features, exclude flank annotations transparently, and return annotated GenBank plus an offline HTML report. No biological or reaction performance claim.",
+      "expected_sequence": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCAC",
+      "expected_features": [
+        {
+          "label": "backbone_core",
+          "type": "misc_feature",
+          "parts": [
+            [
+              24,
+              84,
+              1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "backbone_core"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        },
+        {
+          "label": "right_overlap",
+          "type": "misc_feature",
+          "parts": [
+            [
+              84,
+              108,
+              1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "right_overlap"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        },
+        {
+          "label": "insert_core",
+          "type": "misc_feature",
+          "parts": [
+            [
+              108,
+              151,
+              -1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "insert_core"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        },
+        {
+          "label": "origin_overlap",
+          "type": "misc_feature",
+          "parts": [
+            [
+              0,
+              24,
+              1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "origin_overlap"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "circular_wrap_reverse",
+      "kind": "success",
+      "sources": [
+        {
+          "name": "circular_wrap_source",
+          "sequence": "CATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGACAGTCTAGAGGCTACCTGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGC",
+          "topology": "circular",
+          "features": [
+            {
+              "label": "backbone_core",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  108,
+                  124,
+                  1
+                ],
+                [
+                  0,
+                  44,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "backbone_core"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "right_overlap",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  44,
+                  68,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "right_overlap"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "excluded_0",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  68,
+                  84,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "excluded_0"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            }
+          ],
+          "reference": {
+            "title": "Synthetic source bibliography",
+            "authors": "Fixture",
+            "journal": "Software test",
+            "parts": [
+              [
+                0,
+                124,
+                null
+              ]
+            ]
+          }
+        },
+        {
+          "name": "circular_wrap_reverse_source_1",
+          "sequence": "GGGGGGGGGGGGGTAGCATCGGTACGATCTCAGTGCAGTGCTAACGTACGATCCGATCGTCAAGGTCTAGCATCGCTAAGTCGTACTAGGTCATGCACTGACGTCCCCCCCCC",
+          "topology": "linear",
+          "features": [
+            {
+              "label": "insert_core",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  37,
+                  80,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "insert_core"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "origin_overlap",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  13,
+                  37,
+                  -1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "origin_overlap"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "excluded_1",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  0,
+                  12,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "excluded_1"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            }
+          ],
+          "reference": {
+            "title": "Synthetic source bibliography",
+            "authors": "Fixture",
+            "journal": "Software test",
+            "parts": [
+              [
+                0,
+                113,
+                null
+              ]
+            ]
+          }
+        }
+      ],
+      "fragments": [
+        {
+          "source_index": 0,
+          "ranges": [
+            {
+              "start": 84,
+              "end": 124
+            },
+            {
+              "start": 0,
+              "end": 68
+            }
+          ],
+          "orientation": "forward"
+        },
+        {
+          "source_index": 1,
+          "ranges": [
+            {
+              "start": 13,
+              "end": 104
+            }
+          ],
+          "orientation": "reverse"
+        }
+      ],
+      "overlaps": [
+        "ACGTCAGTGCATGACCTAGTACGA",
+        "TGCACTGAGATCGTACCGATGCTA"
+      ],
+      "objective": "Select the explicit backbone ranges across the circular source origin and the reverse-oriented insert range. Produce one circular computational construct, preserve annotation strands and bibliography, and explain every excluded flank feature. Return GenBank and HTML; laboratory suitability is unassessed.",
+      "expected_sequence": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCAC",
+      "expected_features": [
+        {
+          "label": "backbone_core",
+          "type": "misc_feature",
+          "parts": [
+            [
+              24,
+              84,
+              1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "backbone_core"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        },
+        {
+          "label": "right_overlap",
+          "type": "misc_feature",
+          "parts": [
+            [
+              84,
+              108,
+              1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "right_overlap"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        },
+        {
+          "label": "insert_core",
+          "type": "misc_feature",
+          "parts": [
+            [
+              108,
+              151,
+              -1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "insert_core"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        },
+        {
+          "label": "origin_overlap",
+          "type": "misc_feature",
+          "parts": [
+            [
+              0,
+              24,
+              1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "origin_overlap"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "held_out_reverse",
+      "kind": "success",
+      "sources": [
+        {
+          "name": "held_out_reverse_source_0",
+          "sequence": "GGGGGGGCTAAATACGATTCCGCATACCAAATTCATGAGAGGTCTCACATAATCTGCAAATATCCGAATCATATAGATATCGTCATTTGAGTACTAATGTTATCTATATAGGCCAAACAAGTTGCAACTCCCCCCCCCCCCCC",
+          "topology": "linear",
+          "features": [
+            {
+              "label": "backbone_core",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  31,
+                  108,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "backbone_core"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "right_overlap",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  108,
+                  132,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "right_overlap"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "excluded_0",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  0,
+                  6,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "excluded_0"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            }
+          ],
+          "reference": {
+            "title": "Synthetic source bibliography",
+            "authors": "Fixture",
+            "journal": "Software test",
+            "parts": [
+              [
+                0,
+                143,
+                null
+              ]
+            ]
+          }
+        },
+        {
+          "name": "held_out_reverse_source_1",
+          "sequence": "GGGGGGGGGGGGGTTTGGTATGCGGAATCGTATTTAGGGCGTACATCACTACGGAAGAGCTAGACTCAGTAGTGACCTATATCGTCAAGAGGGAGTTGCAACTTGTTTGGCCTACCCCCCCCC",
+          "topology": "linear",
+          "features": [
+            {
+              "label": "insert_core",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  37,
+                  90,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "insert_core"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "origin_overlap",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  13,
+                  37,
+                  -1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "origin_overlap"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            },
+            {
+              "label": "excluded_1",
+              "type": "misc_feature",
+              "parts": [
+                [
+                  0,
+                  12,
+                  1
+                ]
+              ],
+              "qualifiers": {
+                "label": [
+                  "excluded_1"
+                ],
+                "note": [
+                  "Synthetic software fixture; no biological function claimed"
+                ]
+              }
+            }
+          ],
+          "reference": {
+            "title": "Synthetic source bibliography",
+            "authors": "Fixture",
+            "journal": "Software test",
+            "parts": [
+              [
+                0,
+                123,
+                null
+              ]
+            ]
+          }
+        }
+      ],
+      "fragments": [
+        {
+          "source_index": 0,
+          "ranges": [
+            {
+              "start": 7,
+              "end": 132
+            }
+          ],
+          "orientation": "forward"
+        },
+        {
+          "source_index": 1,
+          "ranges": [
+            {
+              "start": 13,
+              "end": 114
+            }
+          ],
+          "orientation": "reverse"
+        }
+      ],
+      "overlaps": [
+        "TAGGCCAAACAAGTTGCAACTCCC",
+        "CTAAATACGATTCCGCATACCAAA"
+      ],
+      "objective": "From the supplied annotated synthetic library, take the stated backbone interval and reverse-complement the stated insert interval. Assemble using the two declared terminal homologies, retain all complete annotations, report excluded flanks, and deliver a circular GenBank plus explanatory HTML. Preserve the exact 178-base fixture sequence; make no biological-function claim.",
+      "expected_sequence": "CTAAATACGATTCCGCATACCAAATTCATGAGAGGTCTCACATAATCTGCAAATATCCGAATCATATAGATATCGTCATTTGAGTACTAATGTTATCTATATAGGCCAAACAAGTTGCAACTCCCTCTTGACGATATAGGTCACTACTGAGTCTAGCTCTTCCGTAGTGATGTACGCC",
+      "expected_features": [
+        {
+          "label": "backbone_core",
+          "type": "misc_feature",
+          "parts": [
+            [
+              24,
+              101,
+              1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "backbone_core"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        },
+        {
+          "label": "right_overlap",
+          "type": "misc_feature",
+          "parts": [
+            [
+              101,
+              125,
+              1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "right_overlap"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        },
+        {
+          "label": "insert_core",
+          "type": "misc_feature",
+          "parts": [
+            [
+              125,
+              178,
+              -1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "insert_core"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        },
+        {
+          "label": "origin_overlap",
+          "type": "misc_feature",
+          "parts": [
+            [
+              0,
+              24,
+              1
+            ]
+          ],
+          "qualifiers": {
+            "label": [
+              "origin_overlap"
+            ],
+            "note": [
+              "Synthetic software fixture; no biological function claimed"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "negative_cases": [
+    "cut_through_feature",
+    "invalid_ranges",
+    "stale_source",
+    "consequential_missing_range",
+    "unsupported_primer_design"
+  ]
+}

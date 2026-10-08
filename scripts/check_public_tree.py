@@ -1,11 +1,20 @@
 """Small publication guard for tracked files; not a comprehensive secret scanner."""
+import argparse
+import json
 from pathlib import Path
 import re
 import subprocess
 import sys
 
 root = Path(__file__).resolve().parents[1]
-tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode().split('\0')
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--file-list', type=Path, help='JSON source-file inventory for an unpacked archive without Git metadata')
+args = parser.parse_args()
+tracked = json.loads(args.file_list.read_text()) if args.file_list else subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode().split('\0')
+if not isinstance(tracked,list) or any(not isinstance(name,str) for name in tracked):
+    raise SystemExit('Source inventory must be a list of relative filenames.')
+if any(Path(name).is_absolute() or not (root/name).resolve().is_relative_to(root.resolve()) for name in filter(None,tracked)):
+    raise SystemExit('Source inventory contains a path outside the source root.')
 patterns = {
     'machine home path': re.compile(r'/(?:Users|home)/[A-Za-z0-9_.-]+/'),
     'private key': re.compile(r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'),

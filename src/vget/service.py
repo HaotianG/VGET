@@ -23,12 +23,16 @@ from .brief import resolve_brief
 from .conventions import parse_convention, check_convention, ConventionError
 from .importer import import_files as parse_import_files
 from .report import package_files
+from .criteria import validate_criteria, evaluate_criteria
+from .contracts import ToolError, ASSEMBLY, FRAGMENTS, validate
+from .assembly import assemble_homology
+from .fragments import prepare_fragments
 
 LIMITATIONS=[
     'Local deterministic toolkit. Calling agents supply plans and reasoning; no embedded model. Local sequences and objectives are never uploaded by this toolkit.',
     'Default initialization installs six real iGEM reference records; explicit demo initialization uses arbitrary synthetic fixtures.',
     'All nine host profiles record intent; host compatibility and biological function are unevaluated.',
-    'Create concatenates finalized parts in the specified order. It does not simulate laboratory assembly.',
+    'Create composes finalized parts by default. Explicit homology assembly predicts one circular molecule from two prepared linear inputs; optional explicit range/orientation planning prepares these computationally with annotation accounting. Primers, physical cutting, thermal conditions and wet-lab feasibility remain unevaluated.',
     'Modify supports a unique contiguous target, with no other intersecting annotations. Replacement is inserted as supplied, not automatically reverse-complemented.',
     'The iGEM starter is six versioned reference records. Anonymous published-part search and exact selected imports are available, with original GenBank, authors and source license metadata retained. This is not a comprehensive parts library; biological and host suitability remain unevaluated.',
     'Cloning notes use a small reviewed rule vocabulary; unsupported methods/notes cannot activate.',
@@ -54,6 +58,17 @@ def validate_payload(value):
     for field in ('part_ids','protected_feature_ids'):
         if field in value and (not isinstance(value[field],list) or any(not isinstance(item,str) for item in value[field])):
             raise APIError('FIELD_TYPE',f'{field} must be a list of record/feature identifiers.',400)
+    if 'fragments' in value:
+        try:validate(value['fragments'],FRAGMENTS,'fragments')
+        except ToolError as error:raise APIError(error.code,str(error),400,error.details) from error
+        if value.get('mode')!='create':raise APIError('FRAGMENT_MODE','Fragment preparation is an explicit create operation.',400)
+        if 'assembly' not in value or any(key in value for key in ('part_ids','record_id','parent_id','target_feature_id','replacement_id','protected_feature_ids')):
+            raise APIError('FRAGMENT_OPERATION','Use exactly two fragments with homology assembly; whole-record and modification operations cannot be combined.',400)
+    if 'assembly' in value:
+        try: validate(value['assembly'], ASSEMBLY, 'assembly')
+        except ToolError as error: raise APIError(error.code, str(error), 400, error.details) from error
+        if value.get('mode') != 'create':
+            raise APIError('ASSEMBLY_MODE', 'Assembly is an explicit create operation; it cannot be ignored on inspect or modify.', 400)
     return copy.deepcopy(value)
 
 
@@ -106,7 +121,7 @@ def _inspection_genbank(record,store):
         if line.startswith('LOCUS '):lines=[line]
         elif lines:lines.append(line)
         if lines and line.strip()=='//':
-            original=''.join(lines);parsed=parse_records(original,source.get('filename','original.gbk'))[0]
+            original=''.join(lines);parsed=parse_records(original,source.get('filename','original.gbk'),allow_parser_warnings=record.get('metadata',{}).get('inspection_only',False))[0]
             if _original_identity(parsed)==_original_identity(record):candidates.append(original)
             lines=[]
     if not candidates:
@@ -119,16 +134,18 @@ def _inspection_genbank(record,store):
     # file retain that whitespace too; multi-record sources still select only
     # the matched record and retain the whole input separately as evidence.
     original=candidates[0]
-    if text.startswith(original) and not text[len(original):].strip():
-        return text
-    return candidates[0]
+    if text.lstrip().startswith(original) and not text.lstrip()[len(original):].strip():
+        return (store.raw/source['raw_sha256']).read_bytes()
+    return candidates[0].encode('utf-8')
 
 class Service:
     def __init__(self,store: Store):
         self.store=store
 
     @_operation
-    def import_files(self,items,source='lab'):
+    def import_files(self,items,source='lab',inspection_only=False):
+        if type(inspection_only) is not bool:
+            raise APIError('FIELD_TYPE','inspection_only must be a boolean.',400)
         if not isinstance(items,(list,tuple)) or not items:
             raise APIError('FILES_REQUIRED','Choose one or more GenBank, FASTA or catalogue files.')
         total=0
@@ -143,7 +160,7 @@ class Service:
         with self.store.lock:
             state=self.store.load()
             try:
-                records,diagnostics=parse_import_files(items,source,state,self.store)
+                records,diagnostics=parse_import_files(items,source,state,self.store,inspection_only=inspection_only)
             except SequenceError:
                 raise
             except (UnicodeDecodeError,zipfile.BadZipFile,ValueError) as error:
@@ -153,7 +170,9 @@ class Service:
 
     @_operation
     def brief(self,payload):
-        return resolve_brief(validate_payload(payload),self.store.load())
+        p=validate_payload(payload)
+        if 'fragments' in p:p['part_ids']=[f['record_id'] for f in p['fragments']]
+        return resolve_brief(p,self.store.load())
 
     @_operation
     def draft_convention(self,name,notes):
@@ -204,10 +223,13 @@ class Service:
                     'supported_scope':'Exact original GenBank export and explanatory report; sequence, identity and annotations remain unchanged.',
                     'assumptions':['Inspection makes no sequence or annotation edits.','Host compatibility and biological function are not assessed.','No cloning convention is applied.']}
         if agent_context is None:
-            return resolve_brief(payload,state)
+            computational=copy.deepcopy(payload)
+            if 'fragments' in computational:computational['part_ids']=[f['record_id'] for f in computational['fragments']]
+            return resolve_brief(computational,state)
         # The caller has interpreted the objective and must provide every
         # consequential input. Only structured operations are validated here.
         computational=copy.deepcopy(payload)
+        if 'fragments' in computational:computational['part_ids']=[f['record_id'] for f in computational['fragments']]
         computational['objective']='Apply the explicitly supplied sequence transformation.'
         brief=resolve_brief(computational,state)
         questions=brief['questions']
@@ -220,7 +242,7 @@ class Service:
             questions.append({'field':'objective','message':'Supply the original objective, between 1 and 10,000 characters.'})
         brief.update(ready=not questions,objective=objective,
                      interpretation='caller_supplied_agent_plan',
-                     supported_scope='Explicit caller-supplied sequence composition or feature replacement. Scientific intent and rationale are supplied by the calling agent.')
+                     supported_scope='Explicit caller-supplied composition, bounded two-fragment homology prediction or feature replacement. Scientific intent and rationale are supplied by the calling agent.')
         if isinstance(agent_context.get('summary'),str) and agent_context['summary'].strip():
             brief['summary']=agent_context['summary']
         brief['assumptions']=[item for item in brief['assumptions'] if not item.startswith('The local resolver')]
@@ -237,6 +259,8 @@ class Service:
                 agent_context=json.loads(json_bytes(agent_context))
             except (TypeError,ValueError,RecursionError) as error:
                 raise APIError('AGENT_CONTEXT_INVALID','Agent context must contain finite JSON values.',400) from error
+            try:validate_criteria(agent_context.get('criteria',[]))
+            except ToolError as error:raise APIError(error.code,str(error),422,error.details) from error
         store=self.store
         with store.lock:
             state=store.load();brief=self._design_brief(p,state,agent_context)
@@ -247,12 +271,15 @@ class Service:
             convention=state['conventions'].get(p.get('convention_id'))
             protected=list(p.get('protected_feature_ids',[]))
             if not isinstance(protected,list) or any(not isinstance(v,str) for v in protected):raise APIError('PROTECTION_INVALID','Protected features must be a list of exact feature IDs.')
-            parent=None
+            parent=None;prepared=None;fragment_comparisons=None
             if mode=='inspect':
                 sources=[_record(state,p['record_id'])];topology=sources[0]['topology'];length=sources[0]['length']
             elif mode=='create':
-                sources=[_record(state,rid) for rid in p['part_ids']]
-                topology=p.get('topology','circular');length=sum(r['length'] for r in sources)
+                if 'fragments' in p:
+                    sources=[_record(state,f['record_id']) for f in p['fragments']]
+                    prepared,fragment_comparisons=prepare_fragments(sources,p['fragments'])
+                else:sources=[_record(state,rid) for rid in p['part_ids']]
+                topology=p.get('topology','circular');length=sum(r['length'] for r in (prepared or sources))
             else:
                 parent=_record(state,p['parent_id']);replacement=_record(state,p['replacement_id']);sources=[parent,replacement]
                 topology=parent['topology'];target=next(f for f in parent['features'] if f['id']==p['target_feature_id'])
@@ -276,15 +303,34 @@ class Service:
                 if source.get('sequence_source'):collect(source['sequence_source'])
                 for blob in source.get('evidence_blobs',[]):collect(blob)
             for source_record in sources:collect(source_record.get('source',{}))
+            assembled = assemble_homology(prepared or sources,name,p['assembly'],topology) if 'assembly' in p else None
+            if assembled: length = assembled[0]['length']
             if convention:
                 failures,rule_protected=check_convention(convention,name,host,topology,length,parent)
                 if failures:raise APIError('CONSTRAINT_CONFLICT','Convention constraints are not satisfied.',details=failures)
                 protected.extend(rule_protected)
             if mode=='inspect':record,changes=copy.deepcopy(sources[0]),[]
-            elif mode=='create':record,changes=compose(sources,name,topology)
+            elif mode=='create':record,changes=assembled or compose(sources,name,topology)
             else:record,changes=replace_feature(parent,p['target_feature_id'],replacement,name,list(dict.fromkeys(protected)))
+            if fragment_comparisons is not None:
+                record['metadata']['fragment_planning']=fragment_comparisons
+                changes=[{'kind':'fragment_preparation','source_id':r['source_id'],
+                          'message':f'Prepared explicit {r["orientation"]} ranges from {r["source_name"]}; complete features retained, outside features listed and whole-record source projections audited. Physical cutting unevaluated.',
+                          'ranges':r['ranges'],'fragment_id':r['fragment_id']} for r in fragment_comparisons]+changes
             checks=validate_record(record)
+            if assembled:
+                checks.append(dict(id='homology_prediction',status='pass',message='Pinned pydna prediction uses both prepared inputs exactly once, matches the explicit terminal junction path and yields one circular molecule. Source annotations map without clipping; thermal and experimental conditions are unevaluated.'))
+            if fragment_comparisons is not None:
+                checks.append(dict(id='fragment_preparation',status='pass',message='Explicit source ranges and orientations applied; all source features accounted for as complete retained features, outside exclusions or audited whole-record source projections. Other partial features rejected; bibliography ranges projected with an audit.'))
+            criterion_checks=evaluate_criteria(agent_context.get('criteria',[]) if agent_context else [],record)
+            if any(c['status']=='fail' for c in criterion_checks):
+                raise APIError('CRITERION_FAILED','Materialized output does not satisfy required typed criteria.',details=criterion_checks)
+            checks.extend(criterion_checks)
             for source_record in sources:
+                for index,warning in enumerate(source_record.get('metadata',{}).get('parser_warnings',[])):
+                    checks.append({'id':f'parser_warning:{source_record["id"]}:{index}','status':'warning','message':str(warning)})
+                if source_record.get('metadata',{}).get('inspection_only'):
+                    checks.append({'id':'annotation_interpretation','status':'unevaluated','message':'Map and feature locations are a parser interpretation of the retained original; source warnings have not been repaired or resolved.'})
                 for index,warning in enumerate(source_record.get('metadata',{}).get('registry',{}).get('warnings',[])):
                     checks.append({'id':f'registry_{source_record["id"]}_{index}','status':'warning','message':source_record['name']+': '+warning})
             if any(c['status']=='fail' for c in checks):raise APIError('VALIDATION_FAILED','Structural checks failed.',details=checks)
@@ -295,19 +341,25 @@ class Service:
                 annotations=record.setdefault('metadata',{}).setdefault('annotations',{})
                 annotations['date']=datetime.fromisoformat(committed_at).strftime('%d-%b-%Y').upper()
                 comments=['VGET derived computational record; biological function and laboratory assembly are unevaluated.']
+                if assembled:
+                    comments.append('Exact terminal homology prediction: pydna '+record['metadata']['assembly']['backend_version']+'; origin anchored to backbone base 0. Two junction overlaps: '+', '.join(p['assembly']['overlaps'])+'. Prepared inputs used as supplied; source annotations retained independently, including shared-overlap annotations. No primer, cutting, temperature or experimental validation.')
+                if fragment_comparisons is not None:
+                    comments.append('Explicit computational fragment preparation from original records: '+ '; '.join(r['source_id']+' '+r['orientation']+' '+str(r['ranges']) for r in fragment_comparisons)+'. Coordinates are 0-based half-open. Complete selected features retained; whole-record source annotations projected with an audit; wholly outside annotations excluded and listed in fragment-planning.json. Reference ranges projected onto selected bases; source bibliography retained. No physical cutting or PCR claim.')
                 for source_record in sources:
                     comment=source_record.get('metadata',{}).get('annotations',{}).get('comment')
                     if comment:
                         comments.append(f'Source comment from {source_record["name"]} ({source_record["id"]}); not validated for this derived record:\n{comment}')
                 annotations['comment']='\n\n'.join(comments)
-                gbk=to_genbank(record)
-            exported=parse_records(gbk,'construct.gbk')[0]
+                gbk=to_genbank(record,audited_reference_ranges=fragment_comparisons is not None).encode('utf-8')
+            exported=parse_records(gbk.decode('utf-8-sig'),'construct.gbk',allow_parser_warnings=record.get('metadata',{}).get('inspection_only',False))[0]
             if _semantic(exported)!=_semantic(record):raise APIError('EXPORT_MISMATCH','GenBank readback differs from the computed record.')
             if mode=='inspect' and _original_identity(exported)!=_original_identity(record):raise APIError('EXPORT_MISMATCH','Inspection readback differs from original identity or annotation metadata.')
             checks += [dict(id='genbank_roundtrip',status='pass',message='Export readback matches sequence, topology, feature locations and qualifier values.'),dict(id='source_identity',status='pass',message='Exact source record versions and original bytes are retained locally.'),dict(id='convention',status='pass' if convention else 'unevaluated',message='Supported active convention rules passed.' if convention else 'No lab convention selected.'),dict(id='assembly_feasibility',status='unevaluated',message='Sequence composition is not laboratory assembly simulation.'),dict(id='host_compatibility',status='unevaluated',message='Host intent recorded; strain/cell-line compatibility not assessed.'),dict(id='biological_function',status='unevaluated',message='No functional or experimental evidence supplied.')]
+            if assembled:
+                next(c for c in checks if c['id']=='assembly_feasibility')['message']='Exact homology prediction does not establish laboratory feasibility; primers, cutting and reaction conditions are unassessed.'
             did=uid('design');record['id']=uid('rec')
             record.pop('_import_key',None)
-            record['source']={'kind':'design','design_id':did,'filename':'construct.gbk','raw_sha256':store.keep_raw(gbk.encode()),'imported_at':now(),
+            record['source']={'kind':'design','design_id':did,'filename':'construct.gbk','raw_sha256':store.keep_raw(gbk),'imported_at':now(),
                 'evidence_blobs':[copy.deepcopy(source_record['source']) for source_record in sources]}
             base=f'/api/designs/{did}'
             if mode=='inspect':

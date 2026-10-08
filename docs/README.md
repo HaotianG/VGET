@@ -12,3 +12,5 @@
 | Check security and reuse | [Security policy](../SECURITY.md), [MIT license](../LICENSE), [third-party notices](../THIRD_PARTY_NOTICES.md) |
 
 The README is the project overview. Detailed command semantics live with the agent skill; avoid duplicating them in multiple guides. Current support claims must match demonstrated behavior, not planned capability.
+
+- [Explicit fragment planning and annotation comparison](reference/fragment-planning.md)

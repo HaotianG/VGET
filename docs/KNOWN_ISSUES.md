@@ -1,16 +1,24 @@
-# Known issues from the 2026-09-27 review
+# Correctness status — local 0.2.7.dev1 sandbox
 
-Baseline: local prototype 0.2.4. The existing 115 tests passed, but the following controlled review cases exposed uncovered behavior. These findings remain open; repository publication does not resolve them.
+The September 27 public review identified six findings in 0.2.4. This local continuation adds explicit regression cases and bounded repairs. It is not a published release and does not replace the later uncommitted Office working tree.
 
-| ID | Priority | Finding and reproduction | Required correction |
-|---|---|---|---|
-| F1 | P1 | After prepending six bases, a CDS moves from 1..9 to 7..15 but its `transl_except` location remains 4..6 instead of 10..12. GenBank round-trip still passes. `src/vget/sequence.py`, feature-shift paths. | Transform supported coordinate-bearing qualifiers with independent expected mappings, or reject the affected transformation. |
-| F2 | P1 architecture gap | A blocking free-text criterion requests exactly 1000 bases; a caller assessment marks it satisfied and a 640-base design exports. `src/vget/contracts.py` and `src/vget/toolkit.py`, criterion contracts/gates. | Typed computable criteria with validators bound to the materialized output; keep functional claims separately unevaluated. |
-| F3 | P2 | Direct service/GUI creation with an active protection rule reports pass although the rule requires a parent and was skipped. Toolkit planning rejects this case. `src/vget/conventions.py` and `src/vget/service.py`. | Enforce invariants in the shared domain layer and report inapplicable/unsupported rules explicitly. |
-| F4 | P2 | Dynamic iGEM reimport can return `DUPLICATE` after the stored parsed record or source evidence is changed. `src/vget/registry.py`, duplicate branch. | Validate stored parsed identity and all evidence blobs before reusing an acquisition. Export already catches corrupted blobs later; this does not validate the import response. |
-| F5 | P2 | With unchanged GenBank bytes, changed upstream metadata is fetched and discarded with only `DUPLICATE`. | Separate sequence identity from complete acquisition/evidence revision; retain a changed-evidence receipt. |
-| F6 | P2 | NCBI search finds an ID but its failed summary is skipped, returning no candidates and no diagnostic. `src/vget/public_sources.py`. | Per-ID diagnostics or an explicit wholly unusable-response error. |
+| ID | Local correction | Remaining scope |
+|---|---|---|
+| F1 | Coordinate-bearing qualifiers are rejected before transformations. | No qualifier mapper; unchanged inspection retains originals. |
+| F2 | Typed length, sequence hash, topology and feature-count criteria gate export in the shared service. | Free text remains a caller assessment; unsupported biological criteria are not machine-verified. |
+| F3 | A creation convention requiring a modification parent fails in the shared layer. | Reviewed convention vocabulary remains small. |
+| F4 | Public iGEM duplicates revalidate parsed identity and all retained evidence blobs, including legacy acquisitions. | Controlled offline connector cases; no live service incident claimed. |
+| F5 | Changed metadata or attribution creates a distinct evidence acquisition even if GenBank bytes match. | Source claims and reuse terms still need scientific/user review. |
+| F6 | NCBI missing, failed or invalid summaries have per-ID diagnostics and an explicit aggregate summary status. | Discovery is not acquisition or biological validation. |
 
-P1 blocks the affected correctness/acceptance claim. P2 should be resolved during the next focused development milestone. The connector cases use controlled mocked responses, not evidence of an actual public service incident. The deliberately inconsistent caller in F2 demonstrates a missing executable contract; it is not a request for arbitrary natural-language parsing in the CLI.
+The handoff's ambiguous-location case now has an explicit inspection-only route. It retains original bytes and warnings; maps show parser interpretations. Unparseable feature locations still fail, and no repaired derivative is generated. Single-record inspection also preserves UTF-8 BOM, line endings and surrounding whitespace in both the GenBank artifact and HTML download.
 
-Additional product gaps: realistic scientific create/modify evaluation, method-specific assembly, reviewed host/library/convention packs, lab mapping-preview onboarding, cross-agent acceptance and usability baselines. Existing end-to-end evidence covers synthetic sequence operations and unchanged public-reference inspection. No biological performance is validated.
+The optional [two-fragment circular homology operation](reference/homology-assembly.md) is implemented with pinned pydna and explicit junction/annotation maps. It accepts prepared linear inputs, including those derived by explicit [range/orientation planning](reference/fragment-planning.md); it does not design primers, perform cutting, validate temperatures or implement general cloning methods. Repeated homologies, multiple candidate circles and computational limits are explicit failures. Coordinate-bearing qualifiers and inspection-only records remain unsupported for transformations.
+
+See [typed output criteria and inspection](reference/output-criteria.md) for the exact contract. Synthetic regressions and unchanged public-reference inspection demonstrate computational behavior only. Broader assembly methods, annotation inference/reconciliation, 96-member workflows, reviewed host/library/convention packs, private-lab acceptance, cross-agent acceptance and usability baselines remain unfinished. All nine intended host contexts are retained; no biological performance is validated.
+
+Fragment planning requires supplied exact ranges and orientation. It rejects partial features, point locations, uncertain source topology and the existing unsupported feature/qualifier cases. Outside features are listed explicitly; reference locations are projected with a separate audit. It does not infer endpoints or validate physical preparation.
+
+A single whole-record `source` annotation can be projected onto a fragment with an explicit `projected_source` audit; narrower source annotations and other partial features are rejected.
+
+In fragment exports, disjoint projected bibliography ranges remain exact in JSON and GenBank citation remarks; their structured GenBank range is omitted because Biopython 1.86 would expand it to a bounding interval. Simple reference ranges remain structured. Other creation routes retain their previous serializer behavior.

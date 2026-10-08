@@ -1,2 +1,2 @@
 """VGET local prototype: traceable sequence artifacts, explicit evidence limits."""
-__version__ = '0.2.4'
+__version__ = '0.2.7.dev1'

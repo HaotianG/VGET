@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "scope": "Synthetic software fixtures; prepared linear fragments, forward supplied orientations, exact terminal homologies, circular product anchored to backbone base zero.",
+  "minimum_overlap": 20,
+  "overlaps": [
+    "ACGTCAGTGCATGACCTAGTACGA",
+    "TGCACTGAGATCGTACCGATGCTA"
+  ],
+  "backbone": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGA",
+  "insert": "ACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCACTGCACTGAGATCGTACCGATGCTA",
+  "expected_sequence": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCAC",
+  "expected_features": [
+    {
+      "source": "backbone",
+      "label": "backbone_core",
+      "start": 24,
+      "end": 84,
+      "strand": 1
+    },
+    {
+      "source": "backbone",
+      "label": "right_overlap",
+      "start": 84,
+      "end": 108,
+      "strand": 1
+    },
+    {
+      "source": "insert",
+      "label": "insert_core",
+      "start": 108,
+      "end": 151,
+      "strand": -1
+    },
+    {
+      "source": "insert",
+      "label": "origin_overlap",
+      "start": 0,
+      "end": 24,
+      "strand": 1
+    }
+  ],
+  "cases": [
+    {
+      "id": "unique",
+      "kind": "success",
+      "backbone": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGA",
+      "insert": "ACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCACTGCACTGAGATCGTACCGATGCTA",
+      "expected_sequence": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCAC"
+    },
+    {
+      "id": "incompatible",
+      "kind": "no_valid_circle",
+      "backbone": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGA",
+      "insert": "ACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCACAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "id": "repeat_ambiguity",
+      "kind": "ambiguous",
+      "backbone": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGA",
+      "insert": "ACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCACTGCACTGAGATCGTACCGATGCTA"
+    },
+    {
+      "id": "annotation_origin",
+      "kind": "success",
+      "backbone": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGA",
+      "insert": "ACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCACTGCACTGAGATCGTACCGATGCTA",
+      "expected_sequence": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCAC",
+      "spanning_insert_feature": {
+        "input_start": 57,
+        "input_end": 77,
+        "expected_segments": [
+          [
+            141,
+            151
+          ],
+          [
+            0,
+            10
+          ]
+        ],
+        "strand": 1
+      }
+    },
+    {
+      "id": "reverse_annotation_origin",
+      "kind": "success",
+      "backbone": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGA",
+      "insert": "ACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCACTGCACTGAGATCGTACCGATGCTA",
+      "expected_sequence": "TGCACTGAGATCGTACCGATGCTAGATACCGTTCAGATGCCATGGTAGCTACGAGTACCTGCGATACCTAGGCTACAGTGCGATACGTCAGTGCATGACCTAGTACGACTTAGCGATGCTAGACCTTGACGATCGGATCGTACGTTAGCAC",
+      "spanning_insert_feature": {
+        "input_start": 57,
+        "input_end": 77,
+        "expected_segments": [
+          [
+            0,
+            10
+          ],
+          [
+            141,
+            151
+          ]
+        ],
+        "strand": -1
+      }
+    }
+  ]
+}

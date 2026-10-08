@@ -156,7 +156,7 @@
     },
     {
       "name": "library.import",
-      "description": "Import exact local GenBank/FASTA/CSV/XLSX files with source provenance; no network retrieval.",
+      "description": "Import exact local GenBank/FASTA/CSV/XLSX files with source provenance; no network retrieval. inspection_only=true explicitly permits GenBank parser warnings, retains them and original location expressions, and forbids transformations of these records. Default import remains strict.",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -176,6 +176,9 @@
               "addgene",
               "ncbi"
             ]
+          },
+          "inspection_only": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -303,6 +306,68 @@
         "required": [
           "left_id",
           "right_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "fragment.preview",
+      "description": "Read-only preparation preview from an exact record and 0-based half-open ranges. One contiguous range, or two ranges across a circular origin; explicit forward/reverse orientation. Reports retained/excluded annotations, audits projection of whole-record source annotations and rejects other partial features. No primers, reaction planning or stored intermediate. Bases are opt-in.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "fragment": {
+            "type": "object",
+            "properties": {
+              "record_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "ranges": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000
+                    },
+                    "end": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 2
+              },
+              "orientation": {
+                "enum": [
+                  "forward",
+                  "reverse"
+                ]
+              }
+            },
+            "required": [
+              "record_id",
+              "ranges",
+              "orientation"
+            ],
+            "additionalProperties": false
+          },
+          "include_sequence": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "fragment"
         ],
         "additionalProperties": false
       }
@@ -594,6 +659,30 @@
                 },
                 "blocks_export": {
                   "type": "boolean"
+                },
+                "check": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "length",
+                        "sequence_sha256",
+                        "topology",
+                        "feature_count"
+                      ]
+                    },
+                    "value": {
+                      "type": [
+                        "integer",
+                        "string"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "value"
+                  ],
+                  "additionalProperties": false
                 }
               },
               "required": [
@@ -684,7 +773,7 @@
     },
     {
       "name": "job.plan",
-      "description": "Submit create, modify, or exact-original inspect plan using discovered IDs. Inspect uses only record_id, source topology (including unknown), host_id=null if unassessed, and convention_id=null. Requires resolved blocking decisions/questions/criteria and pins complete sources.",
+      "description": "Submit an explicit source-pinned plan. Create uses ordered part_ids for composition or homology assembly; alternatively use fragments=[{record_id,ranges,orientation}, {...}] with homology assembly to prepare ranges from original sources. Homology needs the assembly extra and one unique circular prediction. Modify uses an exact target span. Inspect uses only record_id and unchanged source topology; no cloning convention. Requires resolved blocking decisions/questions/criteria.",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -716,6 +805,79 @@
                       "maxLength": 200
                     },
                     "maxItems": 50
+                  },
+                  "fragments": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "record_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        "ranges": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "start": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 100000
+                              },
+                              "end": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 100000
+                              }
+                            },
+                            "required": [
+                              "start",
+                              "end"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "maxItems": 2
+                        },
+                        "orientation": {
+                          "enum": [
+                            "forward",
+                            "reverse"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "record_id",
+                        "ranges",
+                        "orientation"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 2
+                  },
+                  "assembly": {
+                    "type": "object",
+                    "properties": {
+                      "method": {
+                        "enum": [
+                          "homology"
+                        ]
+                      },
+                      "overlaps": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "pattern": "[ACGT]{20,80}"
+                        },
+                        "maxItems": 2
+                      }
+                    },
+                    "required": [
+                      "method",
+                      "overlaps"
+                    ],
+                    "additionalProperties": false
                   },
                   "parent_id": {
                     "type": "string",

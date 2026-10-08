@@ -16,6 +16,10 @@ from . import registry, public_sources
 from .contracts import TOOL_LIST, TOOLS, ToolError, validate
 from .store import SourceIntegrityError, Store, HOSTS, digest, json_bytes, uid, now
 from .service import Service, APIError, SOURCES, LIMITATIONS
+from .criteria import validate_criteria
+from .assembly import backend_status, validate_request
+from .fragments import prepare_fragment, prepare_fragments
+from .sequence import SequenceError
 
 REQUIRED=('mode','host_id','name','topology','convention_id')
 
@@ -77,7 +81,7 @@ class Toolkit:
         if name=='context.get':
             return {'workspace':str(store.root),'registry':registry.status(store),'hosts':HOSTS,'sources':SOURCES,'conventions':list(state['conventions'].values()),
                 'evidence':[{k:v[k] for k in ('id','title','kind','source_uri','sha256')} for v in state.get('evidence',{}).values()],
-                'capabilities':{'interpretation':'calling agent','create':'exact ordered sequence composition','modify':'one contiguous feature replacement with supplied orientation','inspect':'exact original GenBank record and explanatory report; no sequence or annotation edits','outputs':['annotated GenBank','standalone explanatory HTML','evidence bundle'],
+                'capabilities':{'interpretation':'calling agent','create':'exact ordered composition; optional explicit two-fragment circular homology prediction','assembly':backend_status(),'fragment_planning':'explicit ranges and forward/reverse orientation; annotation preview; partial-feature rejection; homology workflow only','modify':'one contiguous feature replacement with supplied orientation','inspect':'exact original GenBank record and explanatory report; no sequence or annotation edits','outputs':['annotated GenBank','standalone explanatory HTML','evidence bundle'],
                     'access':'local files, bundled iGEM reference snapshot, explicit bounded iGEM published-part search/import, read-only iGEM freshness checks, and public NCBI search plus exact accession.version retrieval','biological_validation':'unevaluated'},
                 'limitations':[x for x in LIMITATIONS if not x.startswith(('Local deterministic','One local process'))]+['Caller supplies attributed reasoning; evidence labels are not independently authenticated.','Local CLI and GUI transactions share an OS file lock. Not a multiuser service.']}
         if name=='library.import':
@@ -89,7 +93,7 @@ class Toolkit:
                 data=path.read_bytes();total+=len(data)
                 if total>12*1024*1024:raise ToolError('IMPORT_LIMIT','One transaction must be at most 12 MB.')
                 items.append((path.name,data))
-            result=self.service.import_files(items,p.get('source','lab'))
+            result=self.service.import_files(items,p.get('source','lab'),inspection_only=p.get('inspection_only',False))
             return {**result,'records':[summary(r) for r in result['records']]}
         if name=='library.fetch_ncbi':
             result=public_sources.fetch_ncbi(store,p['accession'],p.get('expected_raw_sha256'))
@@ -109,6 +113,10 @@ class Toolkit:
             if not p.get('include_sequence'):r=without_bases(r)
             return {'record':r}
         if name=='record.compare':return {'comparison':self.service.compare(p['left_id'],p['right_id'])}
+        if name=='fragment.preview':
+            try: fragment,comparison=prepare_fragment(self._record(state,p['fragment']['record_id']),p['fragment'])
+            except SequenceError as error:raise ToolError(error.code,str(error),error.details) from error
+            return {'fragment':fragment if p.get('include_sequence') else summary(fragment),'annotation_comparison':comparison}
         if name=='convention.draft':return {'convention':self.service.draft_convention(p['name'],p['notes'])}
         if name=='convention.activate':return {'convention':self.service.activate_convention(p['convention_id'],p['reviewed'])}
         if name=='evidence.record':
@@ -210,6 +218,7 @@ class Toolkit:
         for key in ('criteria','assumptions'):
             if key in p:j[key]=p[key]
         self._unique(j['criteria'],'id')
+        validate_criteria(j['criteria'])
         self._unique(p.get('questions',[]),'id');self._unique(p.get('answers',[]),'question_id')
         for q in p.get('questions',[]):
             if q['id'].startswith('field:'):raise ToolError('QUESTION_INVALID','field: is reserved for generated completeness questions.')
@@ -235,15 +244,26 @@ class Toolkit:
         self._refresh(j)
         if j['status']=='needs_input':raise ToolError('NEEDS_INPUT','Resolve unresolved blocking decisions/questions before planning.',j['questions'])
         decisions={k:v['value'] for k,v in j['decisions'].items()}
-        op=p['operation'];mode=decisions['mode']
+        op=p['operation'];mode=decisions['mode'];fragment_previews=None
         if mode=='inspect':
             if set(op)!={'record_id'}:raise ToolError('OPERATION_INVALID','Inspect needs only record_id and performs no sequence or annotation edits.')
             inspected=self._record(state,op['record_id']);used=[inspected['id']]
             if decisions['topology']!=inspected['topology']:raise ToolError('TOPOLOGY_CONFLICT','Inspection retains exact source topology, including unknown.')
             if decisions['convention_id'] is not None:raise ToolError('INSPECT_CONVENTION','Inspection does not apply cloning conventions. Explicitly record convention_id=null; no rules will be silently ignored.')
         elif mode=='create':
-            if not op.get('part_ids') or set(op)-{'part_ids'}:raise ToolError('OPERATION_INVALID','Create needs only an ordered nonempty part_ids list. Parent/protection fields apply to modification.')
-            used=op['part_ids']
+            if 'fragments' in op:
+                if set(op)!={'fragments','assembly'}:raise ToolError('OPERATION_INVALID','Explicit fragments require homology assembly, with no simultaneous part_ids or modification fields.')
+                used=[f['record_id'] for f in op['fragments']]
+                try:
+                    prepared,fragment_previews=prepare_fragments([self._record(state,rid) for rid in used],op['fragments'])
+                    validate_request(prepared,op['assembly'],decisions['topology'])
+                except SequenceError as error:raise ToolError(error.code,str(error),error.details) from error
+            else:
+                if not op.get('part_ids') or set(op)-{'part_ids','assembly'}:raise ToolError('OPERATION_INVALID','Create needs ordered part_ids and optional explicit assembly. Parent/protection fields apply to modification.')
+                used=op['part_ids']
+                if 'assembly' in op:
+                    try: validate_request([self._record(state,rid) for rid in used],op['assembly'],decisions['topology'])
+                    except SequenceError as error: raise ToolError(error.code,str(error),error.details) from error
             c=state['conventions'].get(decisions['convention_id'])
             if c and any(r['kind']=='protect' for r in c['rules']):raise ToolError('UNSUPPORTED_RULE','Protection rules currently require a modify parent; cannot silently ignore them in create.')
         else:
@@ -279,6 +299,7 @@ class Toolkit:
                  'resolved_questions':[q for q in j['custom_questions'] if q['state']=='answered'],'source_refs':pinned,
                  'evidence':[state['evidence'][r['id']] for r in pinned if r['kind']=='evidence'],
                  'assessment_origin':'calling_agent; reasoning is recorded, not experimentally validated'}
+        if fragment_previews is not None:context['fragment_previews']=fragment_previews
         plan={'payload':payload,'context':context,'source_refs':pinned,'based_on_revision':j['revision']}
         plan['sha256']=fingerprint(plan)
         j['plan']=plan;j['status']='planned';j['design_id']=None;j.pop('artifacts',None);j.pop('last_error',None)

@@ -45,6 +45,8 @@ def check_convention(convention,name,host,topology,length,parent=None):
         elif kind=='allowed_hosts' and host['id'] not in value and host['name'] not in value:failures.append(f'{host["name"]} is outside this convention’s allowed host list.')
         elif kind=='topology' and topology!=value:failures.append(f'Convention requires {value} topology.')
         elif kind=='max_length' and length>value:failures.append(f'Length {length} exceeds the convention limit of {value}.')
+        elif kind=='protect' and parent is None:
+            failures.append(f'Protected feature {value} requires a modification parent; this rule cannot be evaluated for creation.')
         elif kind=='protect' and parent:
             matches=[f['id'] for f in parent['features'] if f['label']==value or f['id']==value]
             if not matches:failures.append(f'Protected feature {value} is not found in the parent.')
